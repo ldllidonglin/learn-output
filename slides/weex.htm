@@ -1,0 +1,325 @@
+<!--
+    Powered By nodePPT - This is probably the best web presentation tool so far!
+    version: 1.4.2
+    site: https://github.com/ksky521/nodePPT
+    date: 
+-->
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>weex android sdk 源码 - By 李冬琳</title>
+    <link rel="stylesheet" media="all" href="./css/nodeppt.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
+    
+    <link rel="stylesheet" href="./js/highlight/styles/monokai_sublime.css">
+    <link rel="stylesheet" href="./css/font-awesome.css">
+    
+<link rel="stylesheet" href="./css/theme.moon.css">
+</head>
+<body>
+<div class="slides">
+    <slides id="container">
+        <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>weex android sdk 源码分析</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>使用</h1>
+<ul>
+<li>在app初始化代码中初始化sdk engine<pre><code>InitConfig.Builder builder = new InitConfig.Builder();
+builder.setImgAdapter(new ImageAdapter());
+//builder.setHttpAdapter(new DefaultWXHttpAdapter());
+InitConfig config = builder.build();
+WXSDKEngine.initialize(this,config);
+</code></pre></li>
+<li>初始化so库文件，渲染逻辑、脚本业务框架（weex.js）等都封装在了这里；</li>
+<li>初始化initScriptsFramework，也就是初始化脚本框架；</li>
+<li>注册component、module</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>在activity中渲染bundle.js</h1>
+<pre><code>mInstance = new WXSDKInstance(this); //create weex instance
+mInstance.registerRenderListener(new SimpleRenderListener())
+class SimpleRenderListener implements IWXRenderListener {
+  @Override
+  public void onViewCreated(WXSDKInstance wxsdkInstance, View view) {
+    if (mContainer != null) {
+      //渲染完成后把创建的View添加到容器组件中
+      mContainer.addView(view);
+    }
+  }
+}
+instance.renderByUrl(TAG, WEEX_INDEX_URL, options, null, 
+ScreenUtil.getDisplayWidth(this), ScreenUtil.getDisplayHeight(this), 
+WXRenderStrategy.APPEND_ASYNC);
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<img src="./img/weex-js.png" alt="weex-render">
+<pre><code>// WXRenderManager
+public void createInstance(WXSDKInstance instance) {
+    mRegistries.put(instance.getInstanceId(), new WXRenderStatement(instance));
+}
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<pre><code>/**
+  * Create instance.
+*/
+public void createInstance(final String instanceId, final String template,
+                             final Map&lt;String, Object&gt; options, final String data) {
+    post(new Runnable() {
+      @Override
+      public void run() {
+        invokeCreateInstance(instanceId, template, options, data);
+        final long totalTime = System.currentTimeMillis() - start;
+        WXSDKManager.getInstance().postOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            WXSDKInstance instance = WXSDKManager.getInstance().getSDKInstance(instanceId);
+            if (instance != null) {
+              instance.createInstanceFinished(totalTime);
+            }
+          }
+        }, 0);
+      }
+    }, instanceId);
+}
+private void invokeCreateInstance(String instanceId, String template,
+                                    Map&lt;String, Object&gt; options, String data) {
+  WXJSObject instanceIdObj = new WXJSObject(WXJSObject.String,
+                                                  instanceId);
+  WXJSObject instanceObj = new WXJSObject(WXJSObject.String,
+                                                template);
+  WXJSObject optionsObj = new WXJSObject(WXJSObject.JSON,
+                                               options == null ? &quot;{}&quot;
+                                                               : WXJsonUtils.fromObjectToJSONString(options));
+  WXJSObject dataObj = new WXJSObject(WXJSObject.JSON,
+                                            data == null ? &quot;{}&quot; : data);
+  WXJSObject[] args = {instanceIdObj, instanceObj, optionsObj,
+            dataObj};
+  WXBridge.execJS(instanceId, null, METHOD_CREATE_INSTANCE, args);
+}
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>callNative</h1>
+<ul>
+<li><p>js代码执行完后会调用WXBridge的callNative函数</p>
+<pre><code>public int callNative(String instanceId, String tasks, String callback) {
+  long start = System.currentTimeMillis();
+  if(WXSDKManager.getInstance().getSDKInstance(instanceId)!=null) {
+    WXSDKManager.getInstance().getSDKInstance(instanceId).firstScreenCreateInstanceTime(start);
+  }
+  int errorCode = WXBridgeManager.getInstance().callNative(instanceId, tasks, callback);
+
+  if(WXSDKManager.getInstance().getSDKInstance(instanceId)!=null) {
+    WXSDKManager.getInstance().getSDKInstance(instanceId).callNativeTime(System.currentTimeMillis() - start);
+  }
+  if(WXEnvironment.isApkDebugable()){
+    if(errorCode == WXBridgeManager.DESTROY_INSTANCE){
+      WXLogUtils.w(&quot;destroyInstance :&quot;+instanceId+&quot; JSF must stop callNative&quot;);
+    }
+  }
+  return errorCode;
+}
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>WXBridgeManager中的callNative<pre><code>JSONArray array = JSON.parseArray(tasks);
+JSONObject task;
+int size = array.size();
+for (int i = 0; i &lt; size; ++i) {
+task = (JSONObject) array.get(i);
+if (task != null &amp;&amp; WXSDKManager.getInstance().getSDKInstance(instanceId) != null) {
+  if (TextUtils.equals(WXDomModule.WXDOM, (String) task.get(WXDomModule.MODULE))) {
+    sDomModule = getDomModule(instanceId);
+    sDomModule.callDomMethod(task);
+  } else {
+    WXModuleManager.callModuleMethod(instanceId, (String) task.get(WXDomModule.MODULE),
+            (String) task.get(WXDomModule.METHOD), (JSONArray) task.get(WXDomModule.ARGS));
+  }
+}
+}
+</code></pre></li>
+<li>这个方法负责分发task,调用WXDomModule.callModuleMethod</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<img src="./img/weex-callNative.png" alt="weex-render">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>WXDomModule.callDomMethod会判断method，然后调用相应方法<pre><code>switch (method) {
+  case CREATE_BODY:
+    if(args == null){
+      return;
+    }
+    createBody((JSONObject) args.get(0));
+    break;
+  case UPDATE_ATTRS:
+    if(args == null){
+      return;
+    }
+}
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>WXDomStatement中的createBody</h1>
+<pre><code>void createBody(JSONObject element) {
+  WXDomObject domObject = parseInner(element);
+  domObject.ref = WXDomObject.ROOT;
+  domObject.updateStyle(style);
+  transformStyle(domObject, true);
+  final WXComponent component = mWXRenderManager.createBodyOnDomThread
+                                  (mInstanceId, domObject);
+  mWXRenderManager.createBody(mInstanceId, component);
+}
+</code></pre><p>parseInner函数把element这个JSONObject转换成domObject，给他加上了各种type、 event、childern等属性</p>
+<ul>
+<li>同样的，WXRenderManager执行WXRenderStatement的相同方法</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<pre><code>WXComponent createBodyOnDomThread(WXDomObject dom) {
+    if (mWXSDKInstance == null) {
+      return null;
+    }
+    WXDomObject domObject = new WXDomObject();
+    domObject.type = WXBasicComponentType.DIV;
+    domObject.ref = &quot;god&quot;;
+    mGodComponent = (WXVContainer) WXComponentFactory.newInstance(mWXSDKInstance, domObject, null);
+    mGodComponent.createView(null, -1);
+    if (mGodComponent == null) {
+      if (WXEnvironment.isApkDebugable()) {
+        WXLogUtils.e(&quot;rootView failed!&quot;);
+      }
+      //TODO error callback
+      return null;
+    }
+    FrameLayout frameLayout = (FrameLayout) mGodComponent.getView();
+    ViewGroup.LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    frameLayout.setLayoutParams(layoutParams);
+    frameLayout.setBackgroundColor(Color.TRANSPARENT);
+
+    WXComponent component = generateComponentTree(dom, mGodComponent);
+    mGodComponent.addChild(component);
+    mRegistry.put(component.getRef(), component);
+    return component;
+}
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<pre><code>void createBody(WXComponent component) {
+    long start = System.currentTimeMillis();
+    component.createView(mGodComponent, -1);
+    if (WXEnvironment.isApkDebugable()) {
+      WXLogUtils.renderPerformanceLog(&quot;createView&quot;, (System.currentTimeMillis() - start));
+    }
+    start = System.currentTimeMillis();
+    component.applyLayoutAndEvent(component);
+    component.bindData(component);
+
+    if (WXEnvironment.isApkDebugable()) {
+      WXLogUtils.renderPerformanceLog(&quot;bind&quot;, (System.currentTimeMillis() - start));
+    }
+
+    if (component instanceof WXScroller) {
+      WXScroller scroller = (WXScroller) component;
+      if (scroller.getInnerView() instanceof ScrollView) {
+        mWXSDKInstance.setRootScrollView((ScrollView) scroller.getInnerView());
+      }
+    }
+    mWXSDKInstance.setRootView(mGodComponent.getRealView());
+    if (mWXSDKInstance.getRenderStrategy() != WXRenderStrategy.APPEND_ONCE) {
+      mWXSDKInstance.onViewCreated(mGodComponent);
+    }
+}
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>最终这个createBody方法把view创建了并且触发了viewCreated回调。</li>
+</ul>
+
+</article></section></slide>
+        
+
+        <!-- <slide class="slide logoslide dark nobackground">
+            <article class="flexbox vcenter">
+                <h2 style="color: white;">Powered By nodePPT v1.4.2</h2>
+            </article>
+        </slide> -->
+        <div class="slideTip" id="tip"></div>
+    </slides>
+</div>
+<canvas id="drawBoard" class="draw-board" width="900" height="700"></canvas>
+<div class="progress"><span id="progress"></span></div>
+<div id="_buttons">
+    <div class="_btn-box" id="_btn-box" style="display:none;">
+        <button class="fa fa-arrow-circle-left" id="_btn-prev"></button>
+        <button class="fa fa-arrow-circle-right" id="_btn-next"></button>
+        <button class="fa fa-paint-brush" id="_btn-brush"></button>
+        <button class="fa fa-compress" id="_btn-overview" data-toggle="fa fa-expand"></button>
+    </div>
+    <button class="fa fa-bars" id="_btn-bar"  data-toggle="fa fa-close"></button>
+</div>
+<script src="./js/mixjs/lib/mix.0.3.0.min.js"></script>
+<script>
+var base = location.protocol + '//' + location.host;
+
+var path = (location.pathname + '#').split('/').filter(function(v){
+    return !!v;
+});
+path.pop();
+path = path.join('/');
+MixJS.config({
+    baseURL: [ base, path, 'js'].join('/')+'/'
+});
+
+</script>
+<script src="./js/mixjs/lib/event/broadcast.js"></script>
+<script src="./js/nodeppt.js"></script>
+<script>
+Slide.init({
+    containerID: 'container',
+    drawBoardID: 'drawBoard',
+    slideClass: '.slide',
+    buildClass: '.build',
+    progressID: 'progress',
+    transition: 'slide3',
+    width: 1100,
+    dir: './',
+    
+    //打开下面的注释就开启postMessage方式
+    //访问网址127.0.0.1:8080/ppt/demo#client
+    control:{
+        type: 'postMessage',
+        args:{
+            isControl:  false
+        }
+    },
+    
+    tipID: 'tip'
+});
+MixJS.loadJS('highlight/highlight.pack.js',function(){
+    hljs.tabReplace = '  ';
+    hljs.initHighlightingOnLoad();
+});
+</script>
+ 
+
+<!--placeholder-->
+</body>
+</html>
