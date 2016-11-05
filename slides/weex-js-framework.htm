@@ -1,0 +1,269 @@
+<!--
+    Powered By nodePPT - This is probably the best web presentation tool so far!
+    version: 1.4.2
+    site: https://github.com/ksky521/nodePPT
+    date: 
+-->
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>weex-js-framework源码解读一（compile） - By 李冬琳</title>
+    <link rel="stylesheet" media="all" href="./css/nodeppt.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
+    
+    <link rel="stylesheet" href="./js/highlight/styles/monokai_sublime.css">
+    <link rel="stylesheet" href="./css/font-awesome.css">
+    
+<link rel="stylesheet" href="./css/theme.moon.css">
+</head>
+<body>
+<div class="slides">
+    <slides id="container">
+        <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>weex-js-framework源码解读一（compile）</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>weex</h2>
+<ul>
+<li>是阿里巴巴在今年4月份的Qcon大会上开源的跨平台移动开发工具，一份代码三端运行</li>
+<li>DSL和vuejs相同， 以webcomponents标准，把一个组件分成templat、style、script 三部分以单文件的形式组织代码如helloworld.we</li>
+<li>安装官方的weex-toolkit工具，weex helloworld.we在桌面预览及调试开发，官方还有一个Weex Playground App,可以用来在手机上实时预览</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>源代码</h2>
+<pre><code>&lt;template&gt;
+&lt;div&gt;
+    &lt;text class=&quot;title&quot;&gt;hello weex&lt;/text&gt;
+    &lt;text class=&quot;body&quot;&gt;ddd&lt;/text&gt;
+&lt;/div&gt;
+&lt;/template&gt;
+&lt;style&gt;
+.title {
+    color:red;
+}
+.body {
+    color: blue;
+}
+&lt;/style&gt;
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h3>weex-transformer之后的代码</h3>
+<img src="./img/weex-transformer.png" alt="weex-render">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>上述代码最终会被传递到html5/default/app/ctrl/init.js中的init函数中<pre><code>const bundleDefine = (...args) =&gt; defineFn(app, ...args)
+const bundleBootstrap = (name, config, _data) =&gt; {
+  result = bootstrap(app, name, config, _data || data)
+  updateActions(app)
+  app.doc.listener.createFinish()
+  console.debug(`[JS Framework] After intialized an instance(${app.id})`)
+}
+const bundleRequire = name =&gt; _data =&gt; {
+  result = bootstrap(app, name, {}, _data)
+}
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>执行代码是用new Function的形式执行，用到的define、require、bootstrap等参数都会以参数的形式传递<pre><code>const fn = new Function(&#39;define&#39;,&#39;require&#39;,&#39;document&#39;,&#39;bootstrap&#39;,
+    &#39;register&#39;,&#39;render&#39;,
+    &#39;__weex_define__&#39;, // alias for define
+    &#39;__weex_bootstrap__&#39;, // alias for bootstrap
+    &#39;__weex_document__&#39;, // alias for bootstrap
+    &#39;__weex_require__&#39;,
+    &#39;__weex_viewmodel__&#39;,
+    &#39;setTimeout&#39;,&#39;setInterval&#39;,&#39;clearTimeout&#39;,&#39;clearInterval&#39;,
+    functionBody
+  )
+  fn(
+    bundleDefine,bundleRequire,bundleDocument,bundleBootstrap,bundleRegister,bundleRender,
+    bundleDefine, bundleBootstrap,bundleDocument,bundleRequireModule,bundleVm,timerAPIs.setTimeout,timerAPIs.setInterval,
+    timerAPIs.clearTimeout,
+    timerAPIs.clearInterval)
+</code></pre></li>
+<li>define函数主要就是register、init模块</li>
+<li>bootstrap最后是创建一个VM实例：app.vm = new Vm(cleanName, null, { _app: app }, null, data)
+VM的构造函数里主要做了几件事<pre><code>options = this._app.customComponentMap[type] 获得之前注册得component
+initEvents(this, externalEvents) //初始化事件和生命周期
+this.$emit(&#39;hook:init&#39;)
+initState(this)                  // 初始化data、computed、（完成observe）function
+this.$emit(&#39;hook:created&#39;)
+build(this)  //开始编译、绘制
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>编译</h2>
+<ul>
+<li>build函数其实就是调用compile，compile结束后触发ready lifecycle</li>
+<li>compile函数中有很多if语句，根据节点不同，派发编译到不同的函数比如<ul>
+<li>compileRepeat</li>
+<li>compileShown</li>
+<li>...<br><span style="color:red">最终还是会调用compile函数</span></li>
+</ul>
+</li>
+<li>compile函数最后一句是compileNativeComponent(vm, target, dest, type)，就是绘制NativeUI，因为compile是会递归调用的，所以每一次调用都会调用compileNativeComponent,实现流式渲染</li>
+<li>compileNativeComponent函数中会根据ref属性，决定调用createBody方法还是createElement方法</li>
+<li>compielNativeComponent最终会调用一个attachTarget函数，进行绘制</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>createBody方法会创建一个Element，然后把这个Element的role设为‘body’，ref = ‘_root&#39;</li>
+<li>attachTarget函数最终都是调用dest.appendChild函数，而body的父元素是document，document的appendChild函数是appendBody</li>
+<li>appendBody函数会填充一些属性，比如docId,ownerDocument等，然后把这个vdom穿个listener.createBody方法</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>listener.createBody方法<pre><code>const body = element.toJSON()
+const children = body.children
+delete body.children
+const actions = [createAction(&#39;createBody&#39;, [body])]
+if (children) {
+  actions.push.apply(actions, children.map(child =&gt; {
+      return createAction(&#39;addElement&#39;, [body.ref, child, -1])
+  }))
+}
+return this.addActions(actions)
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>createAction方法返回的是如下格式的json<pre><code>{ module: &#39;dom&#39;, method: name, args: args }
+</code></pre>最终的格式<pre><code>{
+  &quot;module&quot;: &quot;dom&quot;,
+  &quot;method&quot;: &quot;createBody&quot;,
+  &quot;args&quot;: [
+      {
+          &quot;ref&quot;: &quot;_root&quot;,
+          &quot;type&quot;: &quot;div&quot;,
+          &quot;attr&quot;: {},
+          &quot;style&quot;: {}
+      }
+  ]
+}
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li><p>addActions</p>
+<pre><code>Listener.prototype.addActions = function (actions) {
+const updates = this.updates
+const handler = this.handler
+
+if (!Array.isArray(actions)) {
+  actions = [actions]
+}
+
+if (this.batched) {
+  updates.push.apply(updates, actions)
+}
+else {
+  return handler(actions)
+}
+}
+</code></pre></li>
+<li>handler函数最终会调用callNative函数，然后经过队列等等一序列处理，最终是如下递归执行队列中的任务<pre><code>const raf = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        function (calllback) {
+          setTimeout(calllback, 16)
+        }
+raf(runLoop)
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>callNative最终是通过JNI技术传递到native端，调用java代码</li>
+<li><a href="http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc" target="_blank">callNative的各种action</a></li>
+<li><a href="http://note.youdao.com/noteshare?id=bfc0bd07bbaa8b6acba3a8d4b177af4f" target="_blank">native端的绘制</a></li>
+</ul>
+
+</article></section></slide>
+        
+
+        <!-- <slide class="slide logoslide dark nobackground">
+            <article class="flexbox vcenter">
+                <h2 style="color: white;">Powered By nodePPT v1.4.2</h2>
+            </article>
+        </slide> -->
+        <div class="slideTip" id="tip"></div>
+    </slides>
+</div>
+<canvas id="drawBoard" class="draw-board" width="900" height="700"></canvas>
+<div class="progress"><span id="progress"></span></div>
+<div id="_buttons">
+    <div class="_btn-box" id="_btn-box" style="display:none;">
+        <button class="fa fa-arrow-circle-left" id="_btn-prev"></button>
+        <button class="fa fa-arrow-circle-right" id="_btn-next"></button>
+        <button class="fa fa-paint-brush" id="_btn-brush"></button>
+        <button class="fa fa-compress" id="_btn-overview" data-toggle="fa fa-expand"></button>
+    </div>
+    <button class="fa fa-bars" id="_btn-bar"  data-toggle="fa fa-close"></button>
+</div>
+<script src="./js/mixjs/lib/mix.0.3.0.min.js"></script>
+<script>
+var base = location.protocol + '//' + location.host;
+
+var path = (location.pathname + '#').split('/').filter(function(v){
+    return !!v;
+});
+path.pop();
+path = path.join('/');
+MixJS.config({
+    baseURL: [ base, path, 'js'].join('/')+'/'
+});
+
+</script>
+<script src="./js/mixjs/lib/event/broadcast.js"></script>
+<script src="./js/nodeppt.js"></script>
+<script>
+Slide.init({
+    containerID: 'container',
+    drawBoardID: 'drawBoard',
+    slideClass: '.slide',
+    buildClass: '.build',
+    progressID: 'progress',
+    transition: 'slide3',
+    width: 1100,
+    dir: './',
+    
+    //打开下面的注释就开启postMessage方式
+    //访问网址127.0.0.1:8080/ppt/demo#client
+    control:{
+        type: 'postMessage',
+        args:{
+            isControl:  false
+        }
+    },
+    
+    tipID: 'tip'
+});
+MixJS.loadJS('highlight/highlight.pack.js',function(){
+    hljs.tabReplace = '  ';
+    hljs.initHighlightingOnLoad();
+});
+</script>
+ 
+
+<!--placeholder-->
+</body>
+</html>
