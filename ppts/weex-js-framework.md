@@ -1,4 +1,4 @@
-title: weex-js-framework源码解读一（compile）
+title: weex-h5-render
 speaker: 李冬琳
 url: 
 transition: slide3
@@ -6,7 +6,7 @@ files:
 theme: moon
 
 [slide]
-# weex-js-framework源码解读一（compile）
+# weex-h5-render
 [slide]
 ## weex
 * 是阿里巴巴在今年4月份的Qcon大会上开源的跨平台移动开发工具，一份代码三端运行
@@ -33,6 +33,17 @@ theme: moon
 [slide]
 ### weex-transformer之后的代码
 ![weex-render](/img/weex-transformer.png)
+[slide]
+## demo
+```
+window.weex.init({
+    appId: location.href,
+    loader: 'source',
+    source: 'define("@weex-component/foo", function (require, exports, module) {;;module.exports.style = {"title": {'+
+'"color": "#FF0000"  },  "body": {    "color": "#0000FF"  }}'+';module.exports.template = {"type": "div","children": [{"type":"text",      "classList": [        "title"      ],      "attr": {        "value": "hello weex"      }    },{"type": "text",      "classList": ["body"],"attr": {"value": "ddd"}}]};});bootstrap("@weex-component/foo", {"transformerVersion":"0.3.1"})',
+    rootId: 'weex'
+})
+```
 [slide]
 * 上述代码最终会被传递到html5/default/app/ctrl/init.js中的init函数中
 ```
@@ -68,7 +79,7 @@ const bundleRequire = name => _data => {
   ```
 * define函数主要就是register、init模块
 * bootstrap最后是创建一个VM实例：app.vm = new Vm(cleanName, null, { _app: app }, null, data)
- VM的构造函数里主要做了几件事
+* VM的构造函数里主要做了如下几件事
   ```
   options = this._app.customComponentMap[type] 获得之前注册得component
   initEvents(this, externalEvents) //初始化事件和生命周期
