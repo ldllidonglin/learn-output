@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>weex-js-framework源码解读一（compile） - By 李冬琳</title>
+    <title>weex-h5-render - By 李冬琳</title>
     <link rel="stylesheet" media="all" href="./css/nodeppt.css">
     <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
     
@@ -21,7 +21,7 @@
 <div class="slides">
     <slides id="container">
         <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>weex-js-framework源码解读一（compile）</h1>
+<h1>weex-h5-render</h1>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
@@ -49,7 +49,12 @@
     color: blue;
 }
 &lt;/style&gt;
-</code></pre>
+</code></pre><ul>
+<li>template只支持有限的标签，但是基本够用，比如div、text、input、textarea、a等等常见标签</li>
+<li>weex原生提供list、slider、web等组件</li>
+<li>css是使用的css-layout,是前端所用的css的一个子集，但是h5端支持全部css，为了三端通用不建议</li>
+</ul>
+
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <h3>weex-transformer之后的代码</h3>
@@ -57,8 +62,22 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
+<h2>demo</h2>
+<p><a href="https://ldllidonglin.github.io/learn-output/demo/weex/" target="_blank">demo</a></p>
+<pre><code>window.weex.init({
+    appId: location.href,
+    loader: &#39;source&#39;,
+    source: &#39;define(&quot;@weex-component/foo&quot;, function (require, exports, module) {;;module.exports.style = {&quot;title&quot;: {&#39;+
+&#39;&quot;color&quot;: &quot;#FF0000&quot;  },  &quot;body&quot;: {    &quot;color&quot;: &quot;#0000FF&quot;  }}&#39;+&#39;;module.exports.template = {&quot;type&quot;: &quot;div&quot;,&quot;children&quot;: [{&quot;type&quot;:&quot;text&quot;,      &quot;classList&quot;: [        &quot;title&quot;      ],      &quot;attr&quot;: {        &quot;value&quot;: &quot;hello weex&quot;      }    },{&quot;type&quot;: &quot;text&quot;,      &quot;classList&quot;: [&quot;body&quot;],&quot;attr&quot;: {&quot;value&quot;: &quot;ddd&quot;}}]};});bootstrap(&quot;@weex-component/foo&quot;, {&quot;transformerVersion&quot;:&quot;0.3.1&quot;})&#39;,
+    rootId: &#39;weex&#39;
+})
+</code></pre><img src="./img/weex-render-dom.png" alt="weex-render-dom">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>上述代码最终会被传递到html5/default/app/ctrl/init.js中的init函数中<pre><code>const bundleDefine = (...args) =&gt; defineFn(app, ...args)
+<li>init函数就是一序列的初始化，创建实例等操作，最后会把bundle代码以new Function的形式执行</li>
+<li>这是它所需的参数<pre><code>const bundleDefine = (...args) =&gt; defineFn(app, ...args)
 const bundleBootstrap = (name, config, _data) =&gt; {
   result = bootstrap(app, name, config, _data || data)
   updateActions(app)
@@ -68,13 +87,14 @@ const bundleBootstrap = (name, config, _data) =&gt; {
 const bundleRequire = name =&gt; _data =&gt; {
   result = bootstrap(app, name, {}, _data)
 }
+...
 </code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>执行代码是用new Function的形式执行，用到的define、require、bootstrap等参数都会以参数的形式传递<pre><code>const fn = new Function(&#39;define&#39;,&#39;require&#39;,&#39;document&#39;,&#39;bootstrap&#39;,
+<li>用到的define、require、bootstrap等参数都会以参数的形式传递<pre><code>const fn = new Function(&#39;define&#39;,&#39;require&#39;,&#39;document&#39;,&#39;bootstrap&#39;,
     &#39;register&#39;,&#39;render&#39;,
     &#39;__weex_define__&#39;, // alias for define
     &#39;__weex_bootstrap__&#39;, // alias for bootstrap
@@ -91,8 +111,8 @@ const bundleRequire = name =&gt; _data =&gt; {
     timerAPIs.clearInterval)
 </code></pre></li>
 <li>define函数主要就是register、init模块</li>
-<li>bootstrap最后是创建一个VM实例：app.vm = new Vm(cleanName, null, { _app: app }, null, data)
-VM的构造函数里主要做了几件事<pre><code>options = this._app.customComponentMap[type] 获得之前注册得component
+<li>bootstrap最后是创建一个VM实例：app.vm = new Vm(cleanName, null, { _app: app }, null, data)</li>
+<li>VM的构造函数里主要做了如下几件事<pre><code>options = this._app.customComponentMap[type] 获得之前注册得component
 initEvents(this, externalEvents) //初始化事件和生命周期
 this.$emit(&#39;hook:init&#39;)
 initState(this)                  // 初始化data、computed、（完成observe）function
@@ -113,88 +133,27 @@ build(this)  //开始编译、绘制
 </ul>
 </li>
 <li>compile函数最后一句是compileNativeComponent(vm, target, dest, type)，就是绘制NativeUI，因为compile是会递归调用的，所以每一次调用都会调用compileNativeComponent,实现流式渲染</li>
-<li>compileNativeComponent函数中会根据ref属性，决定调用createBody方法还是createElement方法</li>
-<li>compielNativeComponent最终会调用一个attachTarget函数，进行绘制</li>
+<li>compileNativeComponent函数中会根据ref属性，决定调用createBody方法还是createElement方法来创建element</li>
+<li>compielNativeComponent最终会调用一个attachTarget函数，进行绘制<pre><code>attachTarget(vm, element, dest)
+</code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>createBody方法会创建一个Element，然后把这个Element的role设为‘body’，ref = ‘_root&#39;</li>
+<li>demo的绘制流程
+<img src="./img/weex-html5-render.png" alt="weex-html5-render"></li>
+<li>createBody方法也是会创建一个Element，只是这个Element特殊一点，会把这个Element的role设为‘body’，ref = ‘_root&#39;</li>
 <li>attachTarget函数最终都是调用dest.appendChild函数，而body的父元素是document，document的appendChild函数是appendBody</li>
-<li>appendBody函数会填充一些属性，比如docId,ownerDocument等，然后把这个vdom穿个listener.createBody方法</li>
+<li>appendBody函数会填充一些属性，比如docId,ownerDocument等，然后把这个vdom传给listener.createBody方法</li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>listener.createBody方法<pre><code>const body = element.toJSON()
-const children = body.children
-delete body.children
-const actions = [createAction(&#39;createBody&#39;, [body])]
-if (children) {
-  actions.push.apply(actions, children.map(child =&gt; {
-      return createAction(&#39;addElement&#39;, [body.ref, child, -1])
-  }))
-}
-return this.addActions(actions)
-</code></pre></li>
-</ul>
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<ul>
-<li>createAction方法返回的是如下格式的json<pre><code>{ module: &#39;dom&#39;, method: name, args: args }
-</code></pre>最终的格式<pre><code>{
-  &quot;module&quot;: &quot;dom&quot;,
-  &quot;method&quot;: &quot;createBody&quot;,
-  &quot;args&quot;: [
-      {
-          &quot;ref&quot;: &quot;_root&quot;,
-          &quot;type&quot;: &quot;div&quot;,
-          &quot;attr&quot;: {},
-          &quot;style&quot;: {}
-      }
-  ]
-}
-</code></pre></li>
-</ul>
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<ul>
-<li><p>addActions</p>
-<pre><code>Listener.prototype.addActions = function (actions) {
-const updates = this.updates
-const handler = this.handler
-
-if (!Array.isArray(actions)) {
-  actions = [actions]
-}
-
-if (this.batched) {
-  updates.push.apply(updates, actions)
-}
-else {
-  return handler(actions)
-}
-}
-</code></pre></li>
-<li>handler函数最终会调用callNative函数，然后经过队列等等一序列处理，最终是如下递归执行队列中的任务<pre><code>const raf = window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        function (calllback) {
-          setTimeout(calllback, 16)
-        }
-raf(runLoop)
-</code></pre></li>
-</ul>
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<ul>
-<li>callNative最终是通过JNI技术传递到native端，调用java代码</li>
-<li><a href="http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc" target="_blank">callNative的各种action</a></li>
-<li><a href="http://note.youdao.com/noteshare?id=bfc0bd07bbaa8b6acba3a8d4b177af4f" target="_blank">native端的绘制</a></li>
+<li>渲染的原子操作都是appendChild</li>
+<li>每个标签都对应着weex里的component，在h5端，component有一个node属性，保存着这个component对应的DOM，最终的操作就是
+component.node.appendChild(childComponent.node,index)</li>
 </ul>
 
 </article></section></slide>

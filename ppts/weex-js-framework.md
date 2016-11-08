@@ -30,11 +30,15 @@ theme: moon
 }
 </style>
 ```
+* template只支持有限的标签，但是基本够用，比如div、text、input、textarea、a等等常见标签
+* weex原生提供list、slider、web等组件
+* css是使用的css-layout,是前端所用的css的一个子集，但是h5端支持全部css，为了三端通用不建议
 [slide]
 ### weex-transformer之后的代码
 ![weex-render](/img/weex-transformer.png)
 [slide]
 ## demo
+[demo](https://ldllidonglin.github.io/learn-output/demo/weex/)
 ```
 window.weex.init({
     appId: location.href,
@@ -44,8 +48,10 @@ window.weex.init({
     rootId: 'weex'
 })
 ```
+![weex-render-dom](/img/weex-render-dom.png)
 [slide]
-* 上述代码最终会被传递到html5/default/app/ctrl/init.js中的init函数中
+* init函数就是一序列的初始化，创建实例等操作，最后会把bundle代码以new Function的形式执行
+* 这是它所需的参数
 ```
 const bundleDefine = (...args) => defineFn(app, ...args)
 const bundleBootstrap = (name, config, _data) => {
@@ -57,9 +63,10 @@ const bundleBootstrap = (name, config, _data) => {
 const bundleRequire = name => _data => {
     result = bootstrap(app, name, {}, _data)
 }
+...
 ```
 [slide]
-* 执行代码是用new Function的形式执行，用到的define、require、bootstrap等参数都会以参数的形式传递
+* 用到的define、require、bootstrap等参数都会以参数的形式传递
   ```
    const fn = new Function('define','require','document','bootstrap',
       'register','render',
@@ -97,75 +104,19 @@ const bundleRequire = name => _data => {
  + ...   
  <span style="color:red">最终还是会调用compile函数</span>
 * compile函数最后一句是compileNativeComponent(vm, target, dest, type)，就是绘制NativeUI，因为compile是会递归调用的，所以每一次调用都会调用compileNativeComponent,实现流式渲染
-* compileNativeComponent函数中会根据ref属性，决定调用createBody方法还是createElement方法
+* compileNativeComponent函数中会根据ref属性，决定调用createBody方法还是createElement方法来创建element
 * compielNativeComponent最终会调用一个attachTarget函数，进行绘制
+    ```
+    attachTarget(vm, element, dest)
+    ```
 [slide]
-* createBody方法会创建一个Element，然后把这个Element的role设为‘body’，ref = ‘_root'
+* demo的绘制流程
+![weex-html5-render](/img/weex-html5-render.png)
+* createBody方法也是会创建一个Element，只是这个Element特殊一点，会把这个Element的role设为‘body’，ref = ‘_root'
 * attachTarget函数最终都是调用dest.appendChild函数，而body的父元素是document，document的appendChild函数是appendBody
-* appendBody函数会填充一些属性，比如docId,ownerDocument等，然后把这个vdom穿个listener.createBody方法
+* appendBody函数会填充一些属性，比如docId,ownerDocument等，然后把这个vdom传给listener.createBody方法
 [slide]
-* listener.createBody方法
-```
-const body = element.toJSON()
-const children = body.children
-delete body.children
-const actions = [createAction('createBody', [body])]
-if (children) {
-    actions.push.apply(actions, children.map(child => {
-        return createAction('addElement', [body.ref, child, -1])
-    }))
-}
-return this.addActions(actions)
-```
-[slide]
-* createAction方法返回的是如下格式的json
-```
-{ module: 'dom', method: name, args: args }
-```
-最终的格式
-```
-{
-    "module": "dom",
-    "method": "createBody",
-    "args": [
-        {
-            "ref": "_root",
-            "type": "div",
-            "attr": {},
-            "style": {}
-        }
-    ]
-}
-```
-[slide]
-* addActions
-```
-Listener.prototype.addActions = function (actions) {
-  const updates = this.updates
-  const handler = this.handler
+* 渲染的原子操作都是appendChild
+* 每个标签都对应着weex里的component，在h5端，component有一个node属性，保存着这个component对应的DOM，最终的操作就是
+component.node.appendChild(childComponent.node,index)
 
-  if (!Array.isArray(actions)) {
-    actions = [actions]
-  }
-
-  if (this.batched) {
-    updates.push.apply(updates, actions)
-  }
-  else {
-    return handler(actions)
-  }
-}
-```
-* handler函数最终会调用callNative函数，然后经过队列等等一序列处理，最终是如下递归执行队列中的任务
-```
-const raf = window.requestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          function (calllback) {
-            setTimeout(calllback, 16)
-          }
-raf(runLoop)
-```
-[slide]
-* callNative最终是通过JNI技术传递到native端，调用java代码
-* [callNative的各种action](http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc)
-* [native端的绘制](http://note.youdao.com/noteshare?id=bfc0bd07bbaa8b6acba3a8d4b177af4f)
