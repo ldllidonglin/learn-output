@@ -11,7 +11,7 @@ theme: moon
 [slide]
 # 上次分享遗留的几个问题
 [slide]
-* 在js引擎内没有内存计算，h5渲染是进行单位换算后直接写在dom.style上，native渲染用的[css-layout](https://github.com/facebook/yoga)(改名为yoga了)
+* 对于css，在js引擎内没有内存计算，在h5渲染时只是进行单位换算后直接写在dom.style上，native渲染用的[css-layout](https://github.com/facebook/yoga)(改名为yoga了)
 * 不支持百分比布局，按宽度为750进行布局，最后会根据当前的屏幕大小做换算成px(value = value * window.innerWidth / 750)
 * css样式不支持继承，([官方支持的属性](http://alibaba.github.io/weex/doc/references/common-style.html))
 * 不支持overflow，要实现带滚动的布局可以使用内置的scroller组件
@@ -30,8 +30,8 @@ theme: moon
 ## 从源代码到UI的过程
 ![weex-render-native](/img/weex-render-native.png)
 [slide]
-## 通信
-* js引擎发送给Native的[消息](http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc)
+## 通信（js -> native）
+* js引擎通过callNative函数发送给Native特定格式的[消息](http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc)
 * debug log
   ```
   callNative >>>> instanceId:1, tasks:[{"module":"dom","method":"createBody","args":[{"ref":"_root",
@@ -41,7 +41,12 @@ theme: moon
   callNative >>>> instanceId:1, tasks:[{"module":"dom","method":"createFinish","args":[]}], callback:-1
     ```
 * 通过JNI技术，v8引擎执行callNative代码会调用Java的callNative函数，然后经过一序列的调用，实现布局、绑定数据、绑定事件，最终生成UI
-
+[slide]
+## 通信（native -> js）
+* Native调用js有两种情况：
+  + 触发事件（fireEvent）
+  + 回调 (callback)
+* 也是通过JNI技术，java调用execJS函数，将要调用的相关信息传给js引擎
 [slide]
 # 事件  
 [slide]
@@ -105,3 +110,5 @@ animation.transition(testEl, {
 ## 动画结束的回调
 * 在调用的时候就会把参数中的回调注册在实例上的一个callbacks数组中，并且把标记位作为参数传给Native
 * Native端动画结束后，在原生的动画结束回调事件中调用callJS，把之前传进来的标记位和回调参数一起传给js引擎，然后js引擎从callbacks中找到对应的函数，执行
+[slide]
+# 谢谢！
