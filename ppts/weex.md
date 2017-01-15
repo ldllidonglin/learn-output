@@ -12,6 +12,7 @@ theme: moon
 
 # 上次分享遗留的几个问题
 [slide]
+## Q&A
 * 对于css，在js引擎内没有内存计算，在h5渲染时只是进行单位换算后直接写在dom.style上，native渲染用的[css-layout](https://github.com/facebook/yoga)(改名为yoga了)进行计算，然后进行动态布局
 * 不支持百分比布局，按宽度为750进行布局，最后会根据当前的屏幕大小做换算成px(value = value * window.innerWidth / 750)
 * css样式不支持继承，([官方支持的属性](http://alibaba.github.io/weex/doc/references/common-style.html))
@@ -19,15 +20,18 @@ theme: moon
 * 不支持z-index
 * 事件、动画
 [slide]
-# 概况
-* 一套代码、三端运行、动态化
-* weex已捐献给Apache基金会，star数1.1w+
-* weex@0.9.5已全面支持vue2.0,内置的js-runtime已经改成vue2.0，支持vue-router,vue-loader,vuex
-* 目前生态也越来越丰富,支持[在线编写](http://dotwe.org/)，然后用[playground](https://weex-project.io/download.html)预览native效果
+# weex
+[slide]
+## 概况
+* 跨平台：一套代码三端运行
+* 动态化（无需发版即可更新APP）
+* [weex](https://weex-project.io/cn)已捐献给Apache基金会，star数1.1w+
+* weex@0.9.5已全面拥抱vue2.0,内置的js-runtime已经改成vue2.0，支持vue-router,vue-loader,vuex
+* 目前生态也越来越丰富，支持[在线编写](http://dotwe.org/)，然后用[playground](https://weex-project.io/download.html)预览native效果
 * 本地开发用weex-toolkit进行调试编译
 * ![weex](/img/weex.png)
 [slide]
-# 特点（官方）
+## 特点（官方）
 * 轻量（体积小巧，语法简单，方便上手）
 * 可扩展（业务方可自行横向定制 native 组件和 API）
 * 高性能（快速加载，快速渲染，体验流畅）
@@ -38,6 +42,14 @@ theme: moon
 [slide]
 # 性能
 ![performance](/img/weex-performance.png)
+[slide]
+# 和React-Native对比
+* 优点
+ + 入门简单
+ + 性能上有一点点优势
+ + 一次开发，多平台运行
+* 缺点
+ + 社区不够活跃，资料较少
 [slide]
 # 开发
 * template官方内置的只有有限的标签，但是基本够用，比如div、text、input、textarea、a等等常见标签，但是支持自定义标签，所以可以无限扩展
@@ -56,25 +68,39 @@ theme: moon
 
 # 原理
 + 编译运行
-  * H5: ![weex-html5-render](/img/weex-html5-render.png) {:&.moveIn}
-  * Native: ![weex-html5-run](/img/weex-html5-run.png)
-  * 前端在template中定义的div、text等等标签都是组件，各个端都有相对应的组件,渲染的时候会根据type，选择对应的端组件进行渲染
+![weex-js-runtime](/img/weex-jsruntime.png)
+[slide]
+# 渲染
+* H5: ![weex-html5-render](/img/weex-html5-render.png)
+* Native: ![weex-html5-run](/img/weex-html5-run.png)
 [slide]
 # Native
 [slide]
 # Native接入
 * 在android studio中新建一个android工程
+* 修改build.gradle 加入如下基础依赖
+```
+compile 'com.android.support:recyclerview-v7:23.1.1'
+compile 'com.android.support:support-v4:23.1.1'
+compile 'com.android.support:appcompat-v7:23.1.1'
+compile 'com.alibaba:fastjson:1.1.46.android'
+compile 'com.taobao.android:weex_sdk:0.5.1@aar'
+```
 * 在app的初始化代码中初始化SDK Engine
 ```
-InitConfig.Builder builder = new InitConfig.Builder();
-builder.setImgAdapter(new ImageAdapter());
-// builder.setHttpAdapter(new DefaultWXHttpAdapter());
-InitConfig config = builder.build();
-WXSDKEngine.initialize(this,config);
+public class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        InitConfig.Builder builder = new InitConfig.Builder();
+        builder.setImgAdapter(new MyImageAdapter());
+        // builder.setHttpAdapter(new DefaultWXHttpAdapter());
+        InitConfig config = builder.build();
+        // WXSDKEngine.init(this,null,null,new MyImageAdapter(),null);//设置自定义的adadpter实现图片显示、http请求等能力
+        WXSDKEngine.initialize(this,config);
+    }
+}
 ```
-* 初始化so库文件（JNI）
-* 初始化基础js库(weex.js)
-* 注册引擎内置的Component、Module
 [slide]
 # Native接入
 ## 在activity中渲染bundle.js
@@ -196,9 +222,17 @@ animation.transition(testEl, {
 * 在调用的时候就会把参数中的回调注册在实例上的一个callbacks数组中，并且把标记位作为参数传给Native
 * Native端动画结束后，在原生的动画结束回调事件中调用callJS，把之前传进来的标记位和回调参数一起传给js引擎，然后js引擎从callbacks中找到对应的函数，执行
 [slide]
+# 总结
+* 编写vuejs代码，以web开发体验开发Native
+* V8/jsCore执行编译后的js代码，生成virtual-dom，然后交给渲染引擎渲染出UI
+* 所有标签都是component，各端各自实现渲染逻辑，js-runtime只负责解析运行，发送渲染指令。
+* 通过JS-Bridge（JNI），js和Native能互相调用，从而实现通信
+[slide]
 * 重点在Native以及动态化
 * 开发者或者团队必须具备Native能力
 * 业务是否需要高动态性？
 * 性能的提升有多少？
 [slide]
 # 谢谢！
+[slide]
+# Q&A

@@ -30,6 +30,7 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
+<h2>Q&amp;A</h2>
 <ul>
 <li>对于css，在js引擎内没有内存计算，在h5渲染时只是进行单位换算后直接写在dom.style上，native渲染用的<a href="https://github.com/facebook/yoga" target="_blank">css-layout</a>(改名为yoga了)进行计算，然后进行动态布局</li>
 <li>不支持百分比布局，按宽度为750进行布局，最后会根据当前的屏幕大小做换算成px(value = value * window.innerWidth / 750)</li>
@@ -41,19 +42,24 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>概况</h1>
+<h1>weex</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>概况</h2>
 <ul>
-<li>一套代码、三端运行、动态化</li>
-<li>weex已捐献给Apache基金会，star数1.1w+</li>
-<li>weex@0.9.5已全面支持vue2.0,内置的js-runtime已经改成vue2.0，支持vue-router,vue-loader,vuex</li>
-<li>目前生态也越来越丰富,支持<a href="http://dotwe.org/" target="_blank">在线编写</a>，然后用<a href="https://weex-project.io/download.html" target="_blank">playground</a>预览native效果</li>
+<li>跨平台：一套代码三端运行</li>
+<li>动态化（无需发版即可更新APP）</li>
+<li><a href="https://weex-project.io/cn" target="_blank">weex</a>已捐献给Apache基金会，star数1.1w+</li>
+<li>weex@0.9.5已全面拥抱vue2.0,内置的js-runtime已经改成vue2.0，支持vue-router,vue-loader,vuex</li>
+<li>目前生态也越来越丰富，支持<a href="http://dotwe.org/" target="_blank">在线编写</a>，然后用<a href="https://weex-project.io/download.html" target="_blank">playground</a>预览native效果</li>
 <li>本地开发用weex-toolkit进行调试编译</li>
 <li><img src="./img/weex.png" alt="weex"></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><hgroup>
-<h1>特点（官方）</h1>
+<h2>特点（官方）</h2>
 <ul>
 <li>轻量（体积小巧，语法简单，方便上手）</li>
 <li>可扩展（业务方可自行横向定制 native 组件和 API）</li>
@@ -70,6 +76,22 @@
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>性能</h1>
 <img src="./img/weex-performance.png" alt="performance">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>和React-Native对比</h1>
+<ul>
+<li>优点<ul>
+<li>入门简单</li>
+<li>性能上有一点点优势</li>
+<li>一次开发，多平台运行</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>社区不够活跃，资料较少</li>
+</ul>
+</li>
+</ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
@@ -93,12 +115,16 @@
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>原理</h1>
 <ul>
-<li>编译运行<ul class="moveIn">
+<li>编译运行
+<img src="./img/weex-jsruntime.png" alt="weex-js-runtime"></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>渲染</h1>
+<ul>
 <li>H5: <img src="./img/weex-html5-render.png" alt="weex-html5-render"></li>
 <li>Native: <img src="./img/weex-html5-run.png" alt="weex-html5-run"></li>
-<li>前端在template中定义的div、text等等标签都是组件，各个端都有相对应的组件,渲染的时候会根据type，选择对应的端组件进行渲染</li>
-</ul>
-</li>
 </ul>
 
 </article></section></slide>
@@ -110,15 +136,25 @@
 <h1>Native接入</h1>
 <ul>
 <li>在android studio中新建一个android工程</li>
-<li>在app的初始化代码中初始化SDK Engine<pre><code>InitConfig.Builder builder = new InitConfig.Builder();
-builder.setImgAdapter(new ImageAdapter());
-// builder.setHttpAdapter(new DefaultWXHttpAdapter());
-InitConfig config = builder.build();
-WXSDKEngine.initialize(this,config);
+<li>修改build.gradle 加入如下基础依赖<pre><code>compile &#39;com.android.support:recyclerview-v7:23.1.1&#39;
+compile &#39;com.android.support:support-v4:23.1.1&#39;
+compile &#39;com.android.support:appcompat-v7:23.1.1&#39;
+compile &#39;com.alibaba:fastjson:1.1.46.android&#39;
+compile &#39;com.taobao.android:weex_sdk:0.5.1@aar&#39;
 </code></pre></li>
-<li>初始化so库文件（JNI）</li>
-<li>初始化基础js库(weex.js)</li>
-<li>注册引擎内置的Component、Module</li>
+<li>在app的初始化代码中初始化SDK Engine<pre><code>public class MyApplication extends Application {
+  @Override
+  public void onCreate() {
+      super.onCreate();
+      InitConfig.Builder builder = new InitConfig.Builder();
+      builder.setImgAdapter(new MyImageAdapter());
+      // builder.setHttpAdapter(new DefaultWXHttpAdapter());
+      InitConfig config = builder.build();
+      // WXSDKEngine.init(this,null,null,new MyImageAdapter(),null);//设置自定义的adadpter实现图片显示、http请求等能力
+      WXSDKEngine.initialize(this,config);
+  }
+}
+</code></pre></li>
 </ul>
 
 </article></section></slide>
@@ -269,6 +305,16 @@ animation.transition(testEl, {
 </ul>
 
 </article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>总结</h1>
+<ul>
+<li>编写vuejs代码，以web开发体验开发Native</li>
+<li>V8/jsCore执行编译后的js代码，生成virtual-dom，然后交给渲染引擎渲染出UI</li>
+<li>所有标签都是component，各端各自实现渲染逻辑，js-runtime只负责解析运行，发送渲染指令。</li>
+<li>通过JS-Bridge（JNI），js和Native能互相调用，从而实现通信</li>
+</ul>
+
+</article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <ul>
 <li>重点在Native以及动态化</li>
@@ -280,6 +326,10 @@ animation.transition(testEl, {
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>谢谢！</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Q&amp;A</h1>
 
 </article></section></slide>
         
