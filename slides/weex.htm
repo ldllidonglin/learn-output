@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>weex android sdk 源码 - By 李冬琳</title>
+    <title>weex - By 李冬琳</title>
     <link rel="stylesheet" media="all" href="./css/nodeppt.css">
     <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
     
@@ -21,237 +21,265 @@
 <div class="slides">
     <slides id="container">
         <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>weex android sdk 源码分析</h1>
+<h1><img src="///img.alicdn.com/tps/TB1zBLaPXXXXXXeXXXXXXXXXXXX-121-59.svg" alt="weex"></h1>
+<p><small>李冬琳</small></p>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>使用</h1>
+<h1>上次分享遗留的几个问题</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>在app初始化代码中初始化sdk engine<pre><code>InitConfig.Builder builder = new InitConfig.Builder();
-builder.setImgAdapter(new ImageAdapter());
-//builder.setHttpAdapter(new DefaultWXHttpAdapter());
-InitConfig config = builder.build();
-WXSDKEngine.initialize(this,config);
-</code></pre></li>
-<li>初始化so库文件，渲染逻辑、脚本业务框架（weex.js）等都封装在了这里；</li>
-<li>初始化initScriptsFramework，也就是初始化脚本框架；</li>
-<li>注册component、module</li>
+<li>对于css，在js引擎内没有内存计算，在h5渲染时只是进行单位换算后直接写在dom.style上，native渲染用的<a href="https://github.com/facebook/yoga" target="_blank">css-layout</a>(改名为yoga了)进行计算，然后进行动态布局</li>
+<li>不支持百分比布局，按宽度为750进行布局，最后会根据当前的屏幕大小做换算成px(value = value * window.innerWidth / 750)</li>
+<li>css样式不支持继承，(<a href="http://alibaba.github.io/weex/doc/references/common-style.html" target="_blank">官方支持的属性</a>)</li>
+<li>overflow是hidden，要实现带滚动的布局可以使用内置的scroller组件</li>
+<li>不支持z-index</li>
+<li>事件、动画</li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>在activity中渲染bundle.js</h1>
-<pre><code>mInstance = new WXSDKInstance(this); //create weex instance
+<h1>概况</h1>
+<ul>
+<li>一套代码、三端运行、动态化</li>
+<li>weex已捐献给Apache基金会，star数1.1w+</li>
+<li>weex@0.9.5已全面支持vue2.0,内置的js-runtime已经改成vue2.0，支持vue-router,vue-loader,vuex</li>
+<li>目前生态也越来越丰富,支持<a href="http://dotwe.org/" target="_blank">在线编写</a>，然后用<a href="https://weex-project.io/download.html" target="_blank">playground</a>预览native效果</li>
+<li>本地开发用weex-toolkit进行调试编译</li>
+<li><img src="./img/weex.png" alt="weex"></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><hgroup>
+<h1>特点（官方）</h1>
+<ul>
+<li>轻量（体积小巧，语法简单，方便上手）</li>
+<li>可扩展（业务方可自行横向定制 native 组件和 API）</li>
+<li>高性能（快速加载，快速渲染，体验流畅）</li>
+<li>组件化（组件之间通过 webcomponents 的设计完美的隔离，并可以通过特定的方式进行数据和事件的传递）</li>
+<li>多端统一（iOS、Android、HTML5 ）</li>
+<li>生态&amp;链路（各式各样的工具和平台）</li>
+</ul>
+
+</hgroup><article>
+
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>性能</h1>
+<img src="./img/weex-performance.png" alt="performance">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>开发</h1>
+<ul>
+<li>template官方内置的只有有限的标签，但是基本够用，比如div、text、input、textarea、a等等常见标签，但是支持自定义标签，所以可以无限扩展</li>
+<li>weex内置提供list、slider、web、scroller等组件</li>
+<li>css是使用的css-layout, 是前端所用的css的一个子集，只支持部分属性，未来会支持更多</li>
+<li>为了渲染性能，只支持单class选择器，不支持属性选择器和关系选择器</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>开发</h1>
+<div class="columns-3">
+  <img src="./img/weex-code.png" height="500"> =>
+  <img src="./img/weex-code-trans.png" height="500"> =>
+  <iframe data-src="https://ldllidonglin.github.io/learn-output/demo/weex/animation.html" src="about:blank;"></iframe>
+</div>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>原理</h1>
+<ul>
+<li>编译运行<ul class="moveIn">
+<li>H5: <img src="./img/weex-html5-render.png" alt="weex-html5-render"></li>
+<li>Native: <img src="./img/weex-html5-run.png" alt="weex-html5-run"></li>
+<li>前端在template中定义的div、text等等标签都是组件，各个端都有相对应的组件,渲染的时候会根据type，选择对应的端组件进行渲染</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Native</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Native接入</h1>
+<ul>
+<li>在android studio中新建一个android工程</li>
+<li>在app的初始化代码中初始化SDK Engine<pre><code>InitConfig.Builder builder = new InitConfig.Builder();
+builder.setImgAdapter(new ImageAdapter());
+// builder.setHttpAdapter(new DefaultWXHttpAdapter());
+InitConfig config = builder.build();
+WXSDKEngine.initialize(this,config);
+</code></pre></li>
+<li>初始化so库文件（JNI）</li>
+<li>初始化基础js库(weex.js)</li>
+<li>注册引擎内置的Component、Module</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Native接入</h1>
+<h2>在activity中渲染bundle.js</h2>
+<pre><code>mContainer = (ViewGroup) findViewById(R.id.container);
+mInstance = new WXSDKInstance(this); //create weex instance
 mInstance.registerRenderListener(new SimpleRenderListener())
 class SimpleRenderListener implements IWXRenderListener {
   @Override
   public void onViewCreated(WXSDKInstance wxsdkInstance, View view) {
     if (mContainer != null) {
-      //渲染完成后把创建的View添加到容器组件中
+      // 渲染完成后把创建的View添加到容器组件中
       mContainer.addView(view);
     }
   }
 }
-instance.renderByUrl(TAG, WEEX_INDEX_URL, options, null, 
-ScreenUtil.getDisplayWidth(this), ScreenUtil.getDisplayHeight(this), 
-WXRenderStrategy.APPEND_ASYNC);
+instance.renderByUrl(TAG, &#39;&quot;http://10.2.58.141:8081/weex_tmp/h5_render/weex-ani.js?wsport=8082&quot;,&#39;, options, null, 
+  ScreenUtil.getDisplayWidth(this), ScreenUtil.getDisplayHeight(this), 
+  WXRenderStrategy.APPEND_ASYNC);
 </code></pre>
 </article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Native SDK</h1>
+<h2>运行流程</h2>
 <img src="./img/weex-js.png" alt="weex-render">
-<pre><code>// WXRenderManager
-public void createInstance(WXSDKInstance instance) {
-    mRegistries.put(instance.getInstanceId(), new WXRenderStatement(instance));
-}
-</code></pre>
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<pre><code>/**
-  * Create instance.
-*/
-public void createInstance(final String instanceId, final String template,
-                             final Map&lt;String, Object&gt; options, final String data) {
-    post(new Runnable() {
-      @Override
-      public void run() {
-        invokeCreateInstance(instanceId, template, options, data);
-        final long totalTime = System.currentTimeMillis() - start;
-        WXSDKManager.getInstance().postOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            WXSDKInstance instance = WXSDKManager.getInstance().getSDKInstance(instanceId);
-            if (instance != null) {
-              instance.createInstanceFinished(totalTime);
-            }
-          }
-        }, 0);
-      }
-    }, instanceId);
-}
-private void invokeCreateInstance(String instanceId, String template,
-                                    Map&lt;String, Object&gt; options, String data) {
-  WXJSObject instanceIdObj = new WXJSObject(WXJSObject.String,
-                                                  instanceId);
-  WXJSObject instanceObj = new WXJSObject(WXJSObject.String,
-                                                template);
-  WXJSObject optionsObj = new WXJSObject(WXJSObject.JSON,
-                                               options == null ? &quot;{}&quot;
-                                                               : WXJsonUtils.fromObjectToJSONString(options));
-  WXJSObject dataObj = new WXJSObject(WXJSObject.JSON,
-                                            data == null ? &quot;{}&quot; : data);
-  WXJSObject[] args = {instanceIdObj, instanceObj, optionsObj,
-            dataObj};
-  WXBridge.execJS(instanceId, null, METHOD_CREATE_INSTANCE, args);
-}
-</code></pre>
+
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>callNative</h1>
-<ul>
-<li><p>js代码执行完后会调用WXBridge的callNative函数</p>
-<pre><code>public int callNative(String instanceId, String tasks, String callback) {
-  long start = System.currentTimeMillis();
-  if(WXSDKManager.getInstance().getSDKInstance(instanceId)!=null) {
-    WXSDKManager.getInstance().getSDKInstance(instanceId).firstScreenCreateInstanceTime(start);
-  }
-  int errorCode = WXBridgeManager.getInstance().callNative(instanceId, tasks, callback);
+<h1>Native SDK</h1>
+<h2>渲染流程</h2>
+<img src="./img/weex-native-render.png" alt="weex-native-render">
 
-  if(WXSDKManager.getInstance().getSDKInstance(instanceId)!=null) {
-    WXSDKManager.getInstance().getSDKInstance(instanceId).callNativeTime(System.currentTimeMillis() - start);
-  }
-  if(WXEnvironment.isApkDebugable()){
-    if(errorCode == WXBridgeManager.DESTROY_INSTANCE){
-      WXLogUtils.w(&quot;destroyInstance :&quot;+instanceId+&quot; JSF must stop callNative&quot;);
-    }
-  }
-  return errorCode;
-}
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Native和js的通信</h1>
+<ul>
+<li>界面渲染（JS -&gt; Native）</li>
+<li>事件触发 （Native -&gt; JS）</li>
+<li>回调 (Native -&gt; JS)</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>通信（js -&gt; native）</h1>
+<ul>
+<li>js引擎执行渲染操作的最后一步就是callNative</li>
+<li>js引擎通过callNative函数发送给Native特定格式的<a href="http://note.youdao.com/noteshare?id=134039b0899f8a3982c0b67271f42cbc" target="_blank">消息</a></li>
+<li>debug log<pre><code>callNative &gt;&gt;&gt;&gt; instanceId:1, tasks:[{&quot;module&quot;:&quot;dom&quot;,&quot;method&quot;:&quot;createBody&quot;,&quot;args&quot;:[{&quot;ref&quot;:&quot;_root&quot;,
+  &quot;type&quot;:&quot;div&quot;,&quot;attr&quot;:{},&quot;style&quot;:{}}]}], callback:-1
+callNative &gt;&gt;&gt;&gt; instanceId:1, tasks:[{&quot;module&quot;:&quot;dom&quot;,&quot;method&quot;:&quot;addElement&quot;,&quot;args&quot;:[&quot;_root&quot;,{&quot;ref&quot;:&quot;5&quot;,
+  &quot;type&quot;:&quot;div&quot;,&quot;attr&quot;:{},&quot;style&quot;:{&quot;backgroundColor&quot;:&quot;#6666ff&quot;,&quot;width&quot;:200,&quot;height&quot;:200},&quot;event&quot;:[&quot;click&quot;]},-1]}], callback:-1
+callNative &gt;&gt;&gt;&gt; instanceId:1, tasks:[{&quot;module&quot;:&quot;dom&quot;,&quot;method&quot;:&quot;createFinish&quot;,&quot;args&quot;:[]}], callback:-1
 </code></pre></li>
+<li>通过JNI技术，v8引擎执行callNative代码会调用Java的callNative函数。</li>
+<li>Native端的callNative会提取出发过来的消息中的module、method、args等参数，然后分发出去</li>
+<li>经过一序列的调用，实现布局、绑定数据、绑定事件，最终生成UI</li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
+<h2>通信（native -&gt; js）</h2>
 <ul>
-<li>WXBridgeManager中的callNative<pre><code>JSONArray array = JSON.parseArray(tasks);
-JSONObject task;
-int size = array.size();
-for (int i = 0; i &lt; size; ++i) {
-task = (JSONObject) array.get(i);
-if (task != null &amp;&amp; WXSDKManager.getInstance().getSDKInstance(instanceId) != null) {
-  if (TextUtils.equals(WXDomModule.WXDOM, (String) task.get(WXDomModule.MODULE))) {
-    sDomModule = getDomModule(instanceId);
-    sDomModule.callDomMethod(task);
-  } else {
-    WXModuleManager.callModuleMethod(instanceId, (String) task.get(WXDomModule.MODULE),
-            (String) task.get(WXDomModule.METHOD), (JSONArray) task.get(WXDomModule.ARGS));
-  }
-}
-}
-</code></pre></li>
-<li>这个方法负责分发task,调用WXDomModule.callModuleMethod</li>
+<li>Native调用js有两种情况：<ul>
+<li>触发事件（fireEvent）</li>
+<li>回调 (callback)</li>
 </ul>
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<img src="./img/weex-callNative.png" alt="weex-render">
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<ul>
-<li>WXDomModule.callDomMethod会判断method，然后调用相应方法<pre><code>switch (method) {
-  case CREATE_BODY:
-    if(args == null){
-      return;
-    }
-    createBody((JSONObject) args.get(0));
-    break;
-  case UPDATE_ATTRS:
-    if(args == null){
-      return;
-    }
-}
+</li>
+<li>也是通过JNI技术，java调用execJS函数，让js引擎执行相应的函数<pre><code>public native int execJS(String instanceId, String namespace, String function, WXJSObject[] args);
 </code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>WXDomStatement中的createBody</h1>
-<pre><code>void createBody(JSONObject element) {
-  WXDomObject domObject = parseInner(element);
-  domObject.ref = WXDomObject.ROOT;
-  domObject.updateStyle(style);
-  transformStyle(domObject, true);
-  final WXComponent component = mWXRenderManager.createBodyOnDomThread
-                                  (mInstanceId, domObject);
-  mWXRenderManager.createBody(mInstanceId, component);
-}
-</code></pre><p>parseInner函数把element这个JSONObject转换成domObject，给他加上了各种type、 event、childern等属性</p>
+<h1>事件</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>同样的，WXRenderManager执行WXRenderStatement的相同方法</li>
+<li>在代码中声明的事件最终会被编译成如下格式<pre><code>&quot;events&quot;: {
+  &quot;click&quot;: &quot;handler&quot;
+},
+</code></pre></li>
+<li>在js引擎执行时并不会绑定事件，只会存事件对应的响应函数</li>
+<li>在Native端渲染的时候，如果有事件，会同时在View上绑定事件，当事件触发时，Native的事件回调最终是会通过callJS的方式，通知v8引擎执行相关的js代码<pre><code>mWXBridge.execJS(instanceId, namespace, function, args);
+</code></pre></li>
+<li>js引擎在全局注册了fireEvent函数，所以当function是fireEvent时，就能立即调用整个函数，把对应的实例id，元素、事件类型作为参数传进去，然后获取到响应这个事件的函数handler，最终执行这个函数，实现事件的响应回调</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>动画</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li><a href="https://alibaba.github.io/weex/cn/doc/modules/animation.html" target="_blank">动画是weex的一个内置组件</a></li>
+<li><a href="https://github.com/alibaba/weex/blob/dev/android/sdk/src/main/java/com/taobao/weex/ui/animation/WXAnimationModule.java" target="_blank">Native源码</a></li>
+<li>最终的实现是Native原生的动画</li>
+<li>使用<pre><code>var animation = require(&#39;@weex-module/animation&#39;);
+var testEl = this.$el(&#39;test&#39;);
+animation.transition(testEl, {
+  styles: {
+  color: &#39;#FF0000&#39;,
+  transform: &#39;translate(1, 1)&#39;,
+  transformOrigin: &#39;center center&#39;
+  },
+  duration: 0, //ms
+  timingFunction: &#39;ease&#39;,
+  delay: 0 //ms
+}, function () {
+  nativeLog(&#39;animation finished.&#39;)
+})
+</code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<pre><code>WXComponent createBodyOnDomThread(WXDomObject dom) {
-    if (mWXSDKInstance == null) {
-      return null;
-    }
-    WXDomObject domObject = new WXDomObject();
-    domObject.type = WXBasicComponentType.DIV;
-    domObject.ref = &quot;god&quot;;
-    mGodComponent = (WXVContainer) WXComponentFactory.newInstance(mWXSDKInstance, domObject, null);
-    mGodComponent.createView(null, -1);
-    if (mGodComponent == null) {
-      if (WXEnvironment.isApkDebugable()) {
-        WXLogUtils.e(&quot;rootView failed!&quot;);
-      }
-      //TODO error callback
-      return null;
-    }
-    FrameLayout frameLayout = (FrameLayout) mGodComponent.getView();
-    ViewGroup.LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    frameLayout.setLayoutParams(layoutParams);
-    frameLayout.setBackgroundColor(Color.TRANSPARENT);
+<h2>原理</h2>
+<ul>
+<li><p>js引擎会把模块对应的方法都变成callTasks，调用animation模块方法transition时，其实是在调用callTasks</p>
+<pre><code>export function requireModule (moduleName) {
+    const methods = nativeModules[moduleName]
+    const target = {}
 
-    WXComponent component = generateComponentTree(dom, mGodComponent);
-    mGodComponent.addChild(component);
-    mRegistry.put(component.getRef(), component);
-    return component;
+    for (const methodName in methods) {
+      target[methodName] = (...args) =&gt; this.callTasks({
+        module: moduleName,
+        method: methodName,
+        args: args
+      })
+    }
+
+    return target
 }
-</code></pre>
+</code></pre></li>
+<li>callTasks最终还是通过callNative方法实现调用Native端的代码</li>
+<li>Native端会根据callNative中传过来的参数识别出是内置的animation module的transition方法，然后调用相应方法执行，实现动画效果</li>
+</ul>
+
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<pre><code>void createBody(WXComponent component) {
-    long start = System.currentTimeMillis();
-    component.createView(mGodComponent, -1);
-    if (WXEnvironment.isApkDebugable()) {
-      WXLogUtils.renderPerformanceLog(&quot;createView&quot;, (System.currentTimeMillis() - start));
-    }
-    start = System.currentTimeMillis();
-    component.applyLayoutAndEvent(component);
-    component.bindData(component);
+<h2>动画结束的回调</h2>
+<ul>
+<li>在调用的时候就会把参数中的回调注册在实例上的一个callbacks数组中，并且把标记位作为参数传给Native</li>
+<li>Native端动画结束后，在原生的动画结束回调事件中调用callJS，把之前传进来的标记位和回调参数一起传给js引擎，然后js引擎从callbacks中找到对应的函数，执行</li>
+</ul>
 
-    if (WXEnvironment.isApkDebugable()) {
-      WXLogUtils.renderPerformanceLog(&quot;bind&quot;, (System.currentTimeMillis() - start));
-    }
-
-    if (component instanceof WXScroller) {
-      WXScroller scroller = (WXScroller) component;
-      if (scroller.getInnerView() instanceof ScrollView) {
-        mWXSDKInstance.setRootScrollView((ScrollView) scroller.getInnerView());
-      }
-    }
-    mWXSDKInstance.setRootView(mGodComponent.getRealView());
-    if (mWXSDKInstance.getRenderStrategy() != WXRenderStrategy.APPEND_ONCE) {
-      mWXSDKInstance.onViewCreated(mGodComponent);
-    }
-}
-</code></pre>
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
 <ul>
-<li>最终这个createBody方法把view创建了并且触发了viewCreated回调。</li>
+<li>重点在Native以及动态化</li>
+<li>开发者或者团队必须具备Native能力</li>
+<li>业务是否需要高动态性？</li>
+<li>性能的提升有多少？</li>
 </ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>谢谢！</h1>
 
 </article></section></slide>
         
