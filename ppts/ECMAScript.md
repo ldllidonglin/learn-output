@@ -236,8 +236,8 @@ new a.b();
 ```
 [slide]
 * 在规范中就是new表达式
-* new表达式的执行过程?
-  + 先获取函数的[[ConstructorKind]]属性，如果是base则用Object.prototype为原型去创建对象o。
+* new fn表达式的执行过程?
+  + 先获取函数的[[ConstructorKind]]属性，如果是base则用(fn.prototype||Object.prototype)为原型去创建对象o。
   + 如果[[ConstructorKind]]是base，则把o对象绑定为当前执行上下文的this。
   + 执行函数，获取返回值result
   + 如果result的类型是return
