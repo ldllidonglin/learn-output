@@ -1,0 +1,538 @@
+<!--
+    Powered By nodeppt - This is probably the best web presentation tool so far!
+    version: 1.4.4
+    site: https://github.com/ksky521/nodeppt
+    date: 
+-->
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ECMAScript - By 李冬琳</title>
+    <link rel="stylesheet" media="all" href="./css/nodeppt.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
+    
+    <link rel="stylesheet" href="./js/highlight/styles/monokai_sublime.css">
+    <link rel="stylesheet" href="./css/font-awesome.css">
+    
+<link rel="stylesheet" href="./css/theme.moon.css">
+</head>
+<body>
+<div class="slides">
+    <slides id="container">
+        <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ECMAScript规范初探</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>主要内容</h1>
+<ul>
+<li>ECMAScript规范的介绍及制定流程</li>
+<li>规范中一些有意思的点</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ECMAScript规范是什么？</h1>
+<ul>
+<li>ECMAScript<ul>
+<li>是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、JScript、ActionScript</li>
+</ul>
+</li>
+<li>Ecma国际<ul>
+<li>Ecma国际是一个制定通信技术、消费电子等领域相关标准的一个组织。其会员目前有Google、HP、Hitachi、IBM、Intel、Konica Minolta、MircroSoft、Paypal、Yahoo等.</li>
+</ul>
+</li>
+<li>ECMA-262<ul>
+<li>ECMA在1997年发布的262号标准。</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ECMAScript规范从哪里来？</h1>
+<ul>
+<li>ECMAScript规范由Ecma国际的TC39委员会制定，其中第一版在1997年发布，到目前为止有7版：ES1(1997)、ES2(1998)、ES3(1999)、ES5(2009)、ES5.1(2011)、ES6(2015)、ES7(2016)</li>
+<li>从ECMAScript2016(ES7)开始是每年发布一个版本，并且成文标准要从事实标准中诞生，实现先于标准存在</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ECMAScript规范如何制定?</h1>
+<ul>
+<li>TC39委员会中的成员就是各大浏览器产商的员工代表，每两个月会开一次会，讨论各个阶段的提议能不能进入下一阶段，每年的6月份会发布最新一版的ECMA-262标准</li>
+<li>规范中的每个特性一共要经过<a href="https://tc39.github.io/process-document/" target="_blank">5个阶段</a>，最终才会写入规范
+<img src="./img/ECMA/stages.png" alt="stages"></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>5个阶段说明</h1>
+<ul>
+<li>stage0(Strawman)，只要注册会TC39的会员，就可以提交</li>
+<li>stage1(Proposal)，提供demos/polyfills。说明TC39委员会愿意考虑这提议</li>
+<li>stage2(Draft), 完善的说明，必须包含2个实验性的具体实现，其中一个可以是用转译器实现的，例如Babel</li>
+<li>stage3(Candidate)，规范文档，评审人和ECMAScript的编辑要在规范上签字，至少要有两个符合规范的具体实现</li>
+<li>stage4(Finished)，完成阶段，必须有2个实现通过<a href="https://github.com/tc39/test262" target="_blank">test262</a>测试，ECMAScript的编辑必须规范上的签字</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ECMAScript 2016 总体介绍</h1>
+<ul>
+<li>共26章+7个附录，共586页</li>
+<li>1-5章主要是讲规范本身的历史、引用、符号约定等内容</li>
+<li>6-9章分别将数据类型、抽象操作、执行上下文、对象的内部方法</li>
+<li>10-16章是对ECMAScript的语法定义，比如表达式、语句、函数、类等</li>
+<li>17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期等标准对象的定义</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ES2017</h1>
+<ul>
+<li>将在今年发布，包含的<a href="https://github.com/tc39/proposals/blob/master/finished-proposals.md" target="_blank">新特性</a>主要有以下几个：<ul>
+<li>Object.values/Object.entries</li>
+<li>String padding</li>
+<li>Object.getOwnPropertyDescriptors</li>
+<li>Trailing commas in function parameter lists and calls</li>
+<li>Async Functions</li>
+<li>Shared memory and atomics</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>规范中一些有意思的点</h1>
+<ul>
+<li>分号自动插入</li>
+<li>隐式转换</li>
+<li>This</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>分号自动插入</h1>
+<ul>
+<li>ECMAScript的语句必须以分号结尾，但是为了方便可以在源代码中不写分号。</li>
+<li>之所以代码能正常运行是因为ECMAScript提供了一种自动插入分号的机制。</li>
+<li>有三条主要的基本规则。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>规则一</h1>
+<ul>
+<li>当从左到右解析程序代码，遇到一个任何产生式也无法识别的token，只要满足以下三个条件之一，就会在这个token之前插入一个分号：<ul>
+<li>这个token被至少一个行终结符和前一个token分开</li>
+<li>这个token是 }</li>
+<li>这个token是 ) 并且插入分号后会被解析为do-while语句的结尾分号</li>
+</ul>
+</li>
+<li>示例代码<ul>
+<li><img src="./img/ECMA/semicolon.png" alt="semi"></li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>规则二</h1>
+<ul>
+<li>当从左到右解析程序代码，当输入流结束，整个输入流没法被解析为完整的ECMAScript脚本或者模块，那在输入流的末尾会自动插入分号。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>规则三</h1>
+<ul>
+<li>当从左到右解析程序代码，遇到一个被部分产生式解析的token，但是这些产生式是<em>受限产生式</em>，在受限产生式里紧跟在行终结符或者非行终结符后的第一个token被称作受限token。当至少一个行终结符把这个token和前一个token分割开的时候，会在受限token前插入分号
+然而，这有一个附加的优先条件：如果插入分号会导致语句是空语句或者插入的分号是for语句的中两个分号之一，那这个分号不会被插入。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>构成受限产生式的token（++ -- break return throw yield）以及 箭头函数</h2>
+<pre><code>return|throw|break|yield
+a + b
+
+//
+return|throw|break|yield;
+a+b
+
+a = b
+++c
+
+// 
+a=b;
+++ca
+
+// 
+a 
+=&gt; a
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>陷阱</h2>
+<ul>
+<li>+ - 操作符<pre><code>var a = b = 1
+a = b
++1
+</code></pre></li>
+<li>/<pre><code>a = b
+/something/.test(a)
+</code></pre></li>
+<li>(<pre><code>a = b
+(function () {})()
+</code></pre></li>
+<li>[<pre><code>a = b
+[1, 2, 3].forEach()
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>== 操作(隐式转换)</h1>
+<pre><code>var a = {}
+a.valueOf = function () {
+    return 1
+}
+a.toString = function () {
+    return 2
+}
+var b = {}
+b.valueOf = function () {
+    return 1
+}
+b.toString = function () {
+    return 2
+}
+console.log(a == b)
+console.log(1 == a)
+console.log(2 == a)
+</code></pre><pre><code>1 == true
+1 == &#39;1&#39;
+null == undefined
+0 == null
+0 == undefined
+NaN == NaN
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>x == y 算法规范：</h1>
+<ul>
+<li>如果x和y类型相等，返回x === y的结果</li>
+<li>如果x和y是null或者undefined，返回ture</li>
+<li>如果x和y是Number和String，把String转换为Number再比较</li>
+<li>如果x和y有一个是Boolean，把Boolean转换为Number再比较</li>
+<li>如果等号一侧是Object，另一侧是String、Number、Symbol，把Object转换为Primitive再比较</li>
+<li>以上条件都不满足，返回false</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ToPrimitive (input,PreferredType)</h1>
+<ul>
+<li>如果input不是Object，返回input</li>
+<li>如果没传PreferredType参数，设为number</li>
+<li>如果是Object，并且PreferredType为string<ul>
+<li>如果对象有toString函数，则返回Object.toString().</li>
+<li>如果对象有valueOf函数，则返回Object.valueOf().</li>
+</ul>
+</li>
+<li>如果是Object，并且PreferredType为number<ul>
+<li>如果对象有valueOf函数，则返回Object.valueOf().</li>
+<li>如果对象有toString函数，则返回Object.toString().</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>This</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>一道面试题：</h1>
+<h2>说说你对this的理解？</h2>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>常见答案</h1>
+<ul>
+<li>You Dont Know JS 中的总结：<ul>
+<li>如果是new调用，则this绑定到新创建的对象</li>
+<li>call或者apply调用，绑定到制定的对象</li>
+<li>上下文对象调用，绑定到上下文对象</li>
+<li>默认情况下，严格模式是undefined，否则就是全局对象。</li>
+<li>箭头函数不适用以上规则，根据当前词法作用域来决定</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>思考几个问题</h1>
+<ul class="bounceIn">
+<li>this是什么？</li>
+<li>如何确定this的值？</li>
+<li>es6+以及严格模式对确定this值时的影响</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>1 this是什么？</h1>
+<ul>
+<li>是关键字<pre><code>Keyword::one of
+  break do in typeof case else instanceof var catch export new void class extends return while const finally super with continue for switch yield debugger function this default if throw delete import try
+</code></pre></li>
+<li>是表达式</li>
+<li>是词法环境中环境记录的一个属性</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>执行上下文（Execution Contexts）</h1>
+<ul>
+<li>当js开始执行时，首先是创建一个全局的执行上下文。</li>
+<li>js代码执行时，每次进入一段和当前执行上下文无关的代码都会创建一个新的执行上下文。</li>
+<li>它有两个重要的部分：词法环境和变量环境。在初始化时，这两个值是一样的都是词法环境，但是变量环境是不会变化的，词法环境会在执行上下文中发生变化。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>词法环境（Lexical Environments）</h1>
+<ul>
+<li>词法环境是由环境记录项及一个可能为空的外部词法环境的引用组成</li>
+<li>环境记录项一共有5种，但是声明式环境记录项和对象式环境记录项是最基本的两种<ul>
+<li>声明式环境记录项<ul>
+<li>函数式环境记录项（继承自声明式）</li>
+<li>模块环境记录项（继承自声明式）</li>
+</ul>
+</li>
+<li>对象式环境记录项</li>
+<li>全局环境记录项（兼具声明式和函数式的特性）</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<img src="./img/ECMA/context.png" alt="context">
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>2 如何确定this值</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>this表达式的执行过程</h1>
+<h2>ResolveThisBinding</h2>
+<ul>
+<li>获取含有this值的词法环境的环境记录项（GetThisEnvironment）</li>
+<li>返回这个词法环境记录项中的this值。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>this的使用场景</h1>
+<ul>
+<li>全局环境</li>
+<li>函数内部<ul>
+<li>构造函数</li>
+<li>普通调用</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>构造函数</h1>
+<pre><code>var a = {
+    b: function () {
+        console.log(this.c);
+    },
+    c: 3
+}
+a.b();
+new a.b();
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li>在规范中就是new表达式</li>
+<li>new表达式的执行过程?<ul>
+<li>先获取函数的[[ConstructorKind]]属性，如果是base则用Object.prototype为原型去创建对象o。</li>
+<li>如果[[ConstructorKind]]是base，则把o对象绑定为当前执行上下文的this。</li>
+<li>执行函数，获取返回值result</li>
+<li>如果result的类型是return<ul>
+<li>如果其值的类型是Object，则返回result（任何函数，只要返回Object，就直接返回）</li>
+<li>如果[[ConstructorKind]]是base，则返回对象o，（普通函数，如果返回值不是Object，则返回创建的o）</li>
+<li>如果返回值不是undefined，抛出TypeError异常（是返回非object和undefined的值）</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>返回执行上下文中的this值（函数体中没有return语句）</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>call,apply</h2>
+<pre><code>var c = 3;
+var b = () =&gt; {
+    var c = 2;
+    console.log(this.c)};
+b();
+b.call({c:4});
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>函数的定义</h1>
+<ul>
+<li>规范上规定了三种函数：箭头函数、普通函数、方法</li>
+<li>箭头函数的[[thisMode]]为lexical</li>
+<li>都会把定义时的执行上下文中的词法环境作为函数的[[Environment]]属性</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>函数的执行</h1>
+<p>所有函数调用最终都是执行 F.[[Call]](thisArgument, argumentsList)</p>
+<div style="text-align:left;">其执行过程如下：</div><ul>
+<li>创建一个新的执行上下文，并且执行上下文的词法环境是函数词法环境</li>
+<li>给当前的执行上下文绑定this<ul>
+<li>如果函数的[[thisMode]]为lexical，返回</li>
+<li>如果是严格模式，this值为thisArgument，返回</li>
+<li>如果thisArgument是null或者undefined，this为全局环境的this值</li>
+<li>否则设置this值为thisArgument</li>
+</ul>
+</li>
+<li>执行函数体</li>
+<li>遇到this时，是执行this表达式</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>特殊情况（with语句）</h1>
+<pre><code>var a = {this: 1, b: 2};
+with(a) {
+    console.log(b);
+    console.log(this);
+}
+</code></pre>
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>with语句</h1>
+<ul>
+<li>新创建一个对象式词法环境newEnv</li>
+<li>把当前执行上下文的词法环境设置为newEnv</li>
+<li>执行语句</li>
+<li>因为对象式环境记录项中的是没有this值，所以with不能改变this值。</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>es6+以及严格模式对确定this值时的影响</h1>
+<ul>
+<li>箭头函数执行时，并不会绑定this值。</li>
+<li>函数体内是严格模式时，可以给this绑定null和undefined<ul>
+<li>普通函数调用的时候，传入的this是undefined，所以会给this绑定undefined</li>
+</ul>
+</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Q&amp;A</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<ul>
+<li><a href="http://www.ecma-international.org/" target="_blank">ECMA国际</a></li>
+<li><a href="https://github.com/rwaldron/tc39-notes" target="_blank">tc39会议纪要</a></li>
+<li><a href="http://www.ecma-international.org/ecma-262/7.0/index.html" target="_blank">ECMAScript2016</a></li>
+<li><a href="https://www.w3.org/html/ig/zh/wiki/ES5" target="_blank">ES5中文</a></li>
+<li><a href="http://2ality.com/2015/11/tc39-process.html" target="_blank">Dr.Axel Rauschmayer</a></li>
+</ul>
+
+</article></section></slide>
+        
+
+        <!-- <slide class="slide logoslide dark nobackground">
+            <article class="flexbox vcenter">
+                <h2 style="color: white;">Powered By nodeppt v1.4.4</h2>
+            </article>
+        </slide> -->
+        <div class="slideTip" id="tip"></div>
+    </slides>
+</div>
+<canvas id="drawBoard" class="draw-board" width="900" height="700"></canvas>
+<div class="progress"><span id="progress"></span></div>
+<div id="_buttons">
+    <div class="_btn-box" id="_btn-box" style="display:none;">
+        <button class="fa fa-arrow-circle-left" id="_btn-prev"></button>
+        <button class="fa fa-arrow-circle-right" id="_btn-next"></button>
+        <button class="fa fa-paint-brush" id="_btn-brush"></button>
+        <button class="fa fa-compress" id="_btn-overview" data-toggle="fa fa-expand"></button>
+    </div>
+    <button class="fa fa-bars" id="_btn-bar"  data-toggle="fa fa-close"></button>
+</div>
+<script src="./js/mixjs/lib/mix.0.3.0.min.js"></script>
+<script>
+    var ASSET_RELATIVE_DIR = ".";
+</script>
+<script>
+var base = location.protocol + '//' + location.host;
+
+var path = (location.pathname + '#').split('/').filter(function(v){
+    return !!v;
+});
+path.pop();
+path = path.join('/');
+if (typeof ASSET_RELATIVE_DIR === 'string') {
+    path = path + '/' + ASSET_RELATIVE_DIR;
+}
+MixJS.config({
+    baseURL: [ base, path, 'js'].join('/')+'/'
+});
+
+</script>
+<script src="./js/mixjs/lib/event/broadcast.js"></script>
+<script src="./js/nodeppt.js"></script>
+<script>
+Slide.init({
+    containerID: 'container',
+    drawBoardID: 'drawBoard',
+    slideClass: '.slide',
+    buildClass: '.build',
+    progressID: 'progress',
+    transition: 'slide3',
+    width: 1100,
+    dir: './',
+    
+    //打开下面的注释就开启postMessage方式
+    //访问网址127.0.0.1:8080/ppt/demo#client
+    control:{
+        type: 'postMessage',
+        args:{
+            isControl:  false
+        }
+    },
+    
+    tipID: 'tip'
+});
+MixJS.loadJS('highlight/highlight.pack.js',function(){
+    hljs.tabReplace = '  ';
+    hljs.initHighlightingOnLoad();
+});
+</script>
+ 
+
+<!--placeholder-->
+</body>
+</html>
