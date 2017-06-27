@@ -83,7 +83,6 @@ cordova.exec(successCallback, failCallback, service, action, actionArgs);
 * 实际开发demo，对比性能fps，listview，动画，交互是否有延迟
 * 阅读源码
 * 复杂动画case，以及h5的动画转到native后效果消失
-* 
 [slide]
 # 参考资源
 * [跨平台开发](http://fex.baidu.com/blog/2015/05/cross-mobile/)
