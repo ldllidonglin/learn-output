@@ -24,7 +24,8 @@ theme: moon
 * 从ECMAScript2016(ES7)开始是每年发布一个版本，并且成文标准要从事实标准中诞生，实现先于标准存在
 [slide]
 # ECMAScript规范如何制定?
-* TC39委员会中的成员就是各大浏览器产商的员工代表，每两个月会开一次会，讨论各个阶段的提议能不能进入下一阶段，每年的6月份会发布最新一版的ECMA-262标准
+* TC39委员会每两月开一次会，讨论各个阶段的提议能否进入下一阶段
+* 每年6月份会开General Assembly，表决是否通过当年的ECMA-262标准。
 * 规范中的每个特性一共要经过[5个阶段](https://tc39.github.io/process-document/)，最终才会写入规范
   ![stages](/img/ECMA/stages.png)
 [slide]
@@ -43,7 +44,7 @@ theme: moon
 * 17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期等标准对象的定义
 [slide]
 # ES2017
-* 将在今年发布，包含的[新特性](https://github.com/tc39/proposals/blob/master/finished-proposals.md)主要有以下几个：
+* 今年6月27号已经在General Assembly上表决通过了，包含的[新特性](https://github.com/tc39/proposals/blob/master/finished-proposals.md)主要有以下几个：
  + Object.values/Object.entries
  + String padding
  + Object.getOwnPropertyDescriptors
@@ -73,7 +74,7 @@ theme: moon
 * 当从左到右解析程序代码，当输入流结束，整个输入流没法被解析为完整的ECMAScript脚本或者模块，那在输入流的末尾会自动插入分号。
 [slide]
 # 规则三
-* 当从左到右解析程序代码，遇到一个被部分产生式解析的token，但是这些产生式是*受限产生式*，在受限产生式里紧跟在行终结符或者非行终结符后的第一个token被称作受限token。当至少一个行终结符把这个token和前一个token分割开的时候，会在受限token前插入分号
+* 当从左到右解析程序代码，遇到一个被部分产生式解析的token，但是这些产生式是<span class="red">*受限产生式*</span>，在受限产生式里紧跟在行终结符或者非行终结符后的第一个token被称作受限token。当至少一个行终结符把这个token和前一个token分割开的时候，会在受限token前插入分号
 然而，这有一个附加的优先条件：如果插入分号会导致语句是空语句或者插入的分号是for语句的中两个分号之一，那这个分号不会被插入。
 [slide]
 ## 构成受限产生式的token（++ -- break return throw yield）以及 箭头函数
@@ -174,7 +175,7 @@ NaN == NaN
 [slide]
 # 常见答案
 + You Dont Know JS 中的总结：
-    * 如果是new调用，则this绑定到新创建的对象
+    * 如果是new调用，则this绑定到新创建的对象 {:&.bounceIn}
     * call或者apply调用，绑定到制定的对象
     * 上下文对象调用，绑定到上下文对象
     * 默认情况下，严格模式是undefined，否则就是全局对象。
@@ -183,7 +184,7 @@ NaN == NaN
 # 思考几个问题
 * this是什么？ {:&.bounceIn}
 * 如何确定this的值？
-* es6+以及严格模式对确定this值时的影响
+* es6+以及严格模式对确定this值时的影响？
 [slide]
 # 1 this是什么？
 * 是关键字
@@ -191,16 +192,16 @@ NaN == NaN
     Keyword::one of
     break do in typeof case else instanceof var catch export new void class extends return while const finally super with continue for switch yield debugger function this default if throw delete import try
     ```
-* 是表达式
-* 是词法环境中环境记录的一个属性
+* 是表达式<span class="red">（决定了其如何取值）</span>
+* 是词法环境中环境记录的一个属性<span class="red">（决定了其从何取值）</span>
 [slide]
 # 执行上下文（Execution Contexts）
 * 当js开始执行时，首先是创建一个全局的执行上下文。
 * js代码执行时，每次进入一段和当前执行上下文无关的代码都会创建一个新的执行上下文。
-* 它有两个重要的部分：词法环境和变量环境。在初始化时，这两个值是一样的都是词法环境，但是变量环境是不会变化的，词法环境会在执行上下文中发生变化。
+* 它有两个重要的部分：<span class="red">词法环境和变量环境</span>。在初始化时这两个值一样，都是词法环境，但是变量环境不会变化，词法环境会在执行上下文中发生变化。
 [slide]
 # 词法环境（Lexical Environments）
-* 词法环境是由环境记录项及一个可能为空的外部词法环境的引用组成
+* 词法环境是由<span class="red">环境记录项</span>及一个可能为空的<span class="red">外部词法环境的引用</span>组成
 * 环境记录项一共有5种，但是声明式环境记录项和对象式环境记录项是最基本的两种
   + 声明式环境记录项
     * 函数式环境记录项（继承自声明式）
@@ -215,6 +216,7 @@ NaN == NaN
 # this表达式的执行过程
 ## ResolveThisBinding
 * 获取含有this值的词法环境的环境记录项（GetThisEnvironment）
+  + 会和原型链一样，一直往上追溯，直到找到有this值的词法环境（最外层全局词法环境一定有）
 * 返回这个词法环境记录项中的this值。
 [slide]
 # this的使用场景
@@ -246,6 +248,13 @@ new a.b();
     * 如果返回值不是undefined，抛出TypeError异常（是返回非object和undefined的值）
   * 返回执行上下文中的this值（函数体中没有return语句）
 [slide]
+* es6+增加了class继承的语法糖，所以在new的过程中要判断继承和非继承两种情况。
+* 声明了继承的class，必须先执行super表达式，从而对this进行绑定，才能使用this。
+* super表达式的执行过程
+  + result = new GetSuperConstructor
+  + 给当前词法环境绑定this值为result
+* 非继承的情况下，以fn.prototype为原型创建新对象o，把this值绑定为对象o。
+[slide]
 ## call,apply
 ```
 var c = 3;
@@ -255,11 +264,25 @@ var b = () => {
 b();
 b.call({c:4});
 ```
+```
+var a = {
+  c: 1,
+  b: function () {
+    console.log(this.c);
+  }
+}
+var c = {
+  c: 3
+}
+[1,2,3].forEach(a.b, c)
+[1,2,3].forEach(a.b, undefined)
+```
 [slide]
 # 函数的定义
-* 规范上规定了三种函数：箭头函数、普通函数、方法
+* 规范中规定了三种函数：箭头函数、普通函数、方法
 * 箭头函数的[[thisMode]]为lexical
 * 都会把定义时的执行上下文中的词法环境作为函数的[[Environment]]属性
+* 创建函数词法环境时，[[Environment]]属性值会赋值给词法环境的外部词法环境的引用
 [slide]
 # 函数的执行
 所有函数调用最终都是执行 F.[[Call]]\(thisArgument, argumentsList)
@@ -289,9 +312,14 @@ with(a) {
 * 因为对象式环境记录项中的是没有this值，所以with不能改变this值。
 [slide]
 # es6+以及严格模式对确定this值时的影响
-* 箭头函数执行时，并不会绑定this值。
+* 箭头函数执行时，并不会绑定this值, 所以。
+* 继承的class，必须执行super来绑定this值，否则会报ReferenceError
 * 函数体内是严格模式时，可以给this绑定null和undefined
   + 普通函数调用的时候，传入的this是undefined，所以会给this绑定undefined
+[slide]
+# 下面两种情况是如何影响this值的？
+* Function.prototype.bind(thisArg)
+* Array.prototype.forEach(callback, thisArg)
 [slide]
 # Q&A
 [slide]
