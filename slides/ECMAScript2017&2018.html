@@ -40,7 +40,7 @@
 <h1>ECMAScript规范是什么？</h1>
 <ul>
 <li>ECMAScript<ul>
-<li>是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript</li>
+<li>是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等</li>
 </ul>
 </li>
 <li>Ecma国际<ul>
@@ -71,13 +71,22 @@
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>ECMAScript规范如何制定?</h1>
-<ul>
-<li>ECMAScript规范由Ecma国际的TC39委员会制定</li>
-<li>从ECMAScript2016(ES7)开始是每年发布一个版本，并且成文标准要从事实标准中诞生，实现先于标准存在</li>
+<ul class="moveIn">
+<li>Who？<ul>
+<li>Ecma国际的TC39委员会</li>
+</ul>
+</li>
+<li>How？<ul>
+<li>成文标准要从事实标准中诞生，实现先于标准存在</li>
 <li>任何人都可以去<a href="https://github.com/tc39/ecma262/pulls" target="_blank">ecma262的github</a>以提PR的方式提出提案</li>
 <li>TC39委员会每两月开一次会，讨论各个阶段的提案能否进入下一阶段</li>
-<li>每个提案一共要经过<a href="https://tc39.github.io/process-document/" target="_blank">5个阶段</a>，到达stage4的提案才会写入当年要发布的规范</li>
-<li>每年6月份会开General Assembly，表决是否通过当年的ECMA-262标准。</li>
+<li>每个提案一共要经过<a href="https://tc39.github.io/process-document/" target="_blank">5个阶段</a>，到达stage4的提案才会写入下一版规范</li>
+</ul>
+</li>
+<li>when？<ul>
+<li>Ecma国际每年6月份开General Assembly，表决是否通过当年的ECMA-262标准。</li>
+</ul>
+</li>
 </ul>
 
 </article></section></slide>
@@ -98,6 +107,10 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>ES2017&amp;ES2018</h1>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>ECMAScript2017 总体介绍</h1>
 <ul>
 <li>共27章+7个附录，共880页</li>
@@ -107,10 +120,6 @@
 <li>17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义</li>
 <li>27章是内存模型</li>
 </ul>
-
-</article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ES2017&amp;ES2018</h1>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
@@ -129,7 +138,7 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>Object新增两个枚举方法</h2>
+<h2>1 Object新增两个枚举方法</h2>
 <ul>
 <li><p>Object.values</p>
 <pre><code>const obj = { x: &#39;xxx&#39;, y: 1 };
@@ -210,7 +219,7 @@ es8(10, 20, 30,);
 <li>异步编程解决方案<pre><code>function fetchTextByPromise() {
   return new Promise(resolve =&gt; { 
       setTimeout(() =&gt; { 
-      resolve(&quot;es8&quot;);
+        resolve(&quot;es8&quot;);
       }, 2000);
   });
 }
@@ -226,7 +235,7 @@ sayHello(); // Hello es8
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>6 Shared memory and atomics</h2>
 <ul>
-<li>结合Web Worker，使用SharedArrayBuffer在不同线程间共享内存，通过Atomicsj解决多线程对共享内存的的竞态问题。<pre><code>// main.js
+<li>结合Web Worker，使用SharedArrayBuffer在不同线程间共享内存，通过Atomics解决多线程对共享内存的的竞态问题。<pre><code>// main.js
   const worker = new Worker(&#39;worker.js&#39;);
   // To be shared
   const sharedBuffer = new SharedArrayBuffer( // (A)
@@ -239,6 +248,7 @@ sayHello(); // Hello es8
   self.addEventListener(&#39;message&#39;, function (event) {
       const {sharedBuffer} = event.data;
       const sharedArray = new Int32Array(sharedBuffer); // (A)
+      Atomics.store(sharedArray, 0, 123);
       // ···
   });
 </code></pre></li>
@@ -253,13 +263,14 @@ sayHello(); // Hello es8
 <li><a href="https://github.com/tc39/proposal-template-literal-revision" target="_blank">Lifting template literal restriction</a></li>
 </ul>
 </li>
-<li><p>stage3有<a href="https://github.com/tc39/proposals/blob/master/README.md" target="_blank">14个</a></p>
+<li><p>stage3有<a href="https://github.com/tc39/proposals/blob/master/README.md" target="_blank">16个</a></p>
 <ul>
 <li><a href="http://tc39.github.io/Function-prototype-toString-revision/" target="_blank">Function.prototype.toString revision</a></li>
 <li><a href="https://github.com/tc39/proposal-promise-finally" target="_blank">promise-finally</a></li>
 <li><a href="https://github.com/tc39/proposal-optional-catch-binding" target="_blank">Optional catch binding</a></li>
 <li><a href="https://github.com/tc39/proposal-class-fields" target="_blank">class fields</a></li>
 <li><a href="https://github.com/tc39/proposal-dynamic-import" target="_blank">import()</a></li>
+<li><a href="https://github.com/tc39/proposal-import-meta" target="_blank">import.meta</a></li>
 <li><a href="https://github.com/tc39/proposal-global" target="_blank">global</a></li>
 </ul>
 </li>
@@ -276,6 +287,7 @@ sayHello(); // Hello es8
 <li><a href="https://github.com/tc39/proposal-regexp-dotall-flag" target="_blank">s (dotAll) flag for regular expressions</a></li>
 <li><a href="https://github.com/tc39/proposal-regexp-legacy-features" target="_blank">Legacy RegExp features in JavaScript</a></li>
 <li><a href="https://github.com/tc39/proposal-bigint" target="_blank">BigInt</a></li>
+<li><a href="https://github.com/tc39/proposal-private-methods" target="_blank">Private methods and accessors</a></li>
 </ul>
 
 </article></section></slide>
@@ -348,22 +360,60 @@ tag`\unicode and \u{55}`
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>4 global</h2>
 <ul>
-<li>增加一个名为global的全局对象，在浏览器、nodejs、Web Workers通用的全局对象</li>
-</ul>
-<h2>5 import(specifier)</h2>
-<ul>
-<li>支持动态加载模块，返回一个Promise<pre><code>if (isLegacyPlatform()) {
-  import(`messages_${getLocale()}.js)
-  .then(myModule =&gt; {
-      console.log(myModule.default);
-  });
-}
+<li>增加一个名为global的全局对象，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量<pre><code>&#39;use strict&#39;;
+(function (global) {
+  if (!global.global) {
+      if (Object.defineProperty) {
+          Object.defineProperty(global, &#39;global&#39;, {
+              configurable: true,
+              enumerable: false,
+              value: global,
+              writable: true
+          });
+      } else {
+          global.global = global;
+      }
+  }
+})(typeof this === &#39;object&#39; ? this : Function(&#39;return this&#39;)())
 </code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>6 Rest/Spread Properties</h2>
+<h2>5 import(specifier)</h2>
+<ul>
+<li>ES2015就写入规范的import，原生提供了静态的、同步的加载模块的方式</li>
+<li>import()用来支持动态加载模块，返回一个Promise  <pre><code>import(&#39;a.js&#39;)
+.then(myModule =&gt; {
+  console.log(myModule.default);
+});
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>6 import.meta</h2>
+<ul>
+<li><p>给模块内部提供一种获取上下文信息的途径</p>
+<pre><code>&lt;script type=&quot;module&quot; src=&quot;path/to/hamster-displayer.mjs&quot; data-size=&quot;500&quot;&gt;&lt;/script&gt;
+(async () =&gt; {
+const response = await fetch(new URL(&quot;../hamsters.jpg&quot;, import.meta.url));
+const blob = await response.blob();
+
+const size = import.meta.scriptElement.dataset.size || 300;
+
+const image = new Image();
+image.src = URL.createObjectURL(blob);
+image.width = image.height = size;
+
+document.body.appendChild(image);
+})();
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>7 Rest/Spread Properties</h2>
 <ul>
 <li>对象也支持原来数组的展开运算符和函数形参的剩余参数语法<pre><code>const obj = {foo: 1, bar: 2, baz: 3};
 const {foo, ...rest} = obj;
@@ -375,22 +425,39 @@ console.log({...obj, qux: 4})
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>7 class-fields</h2>
+<h2>8 class-fields</h2>
 <ul>
-<li><p>class定义新增公共字段和私有字段</p>
+<li><p>class语法新增声明公共字段和私有字段的方式</p>
 <pre><code>class Counter extends HTMLElement {
-#x = 0; //私有字段
-y = 1;
-a () {
+  #x = 0; // 私有字段
+  y = 1; // 公共字段
+  a () {
 
-}
+  }
 }
 </code></pre></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>8 async-iteration</h2>
+<h2>9 Private methods and accessors</h2>
+<ul>
+<li><p>class语法新增申明私有方法和访问器</p>
+<pre><code>class Counter extends HTMLElement {
+  #x = 0; // 私有字段
+  y = 1; // 公共字段
+  #a () {
+    this.#x++
+  }
+  get #x() {}
+  set #x(value) {}
+}
+</code></pre></li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article>
+<h2>10 async-iteration</h2>
 <ul>
 <li><p>新增异步迭代器，针对异步数据迭代</p>
 <pre><code>const { value, done } = syncIterator.next();
@@ -405,7 +472,7 @@ for await (const line of readLines(filePath)) {
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>9 RegExp Lookbehind Assertions</h2>
+<h2>11 RegExp Lookbehind Assertions</h2>
 <ul>
 <li><p>正则表达式以前只有先行断言，现在新增正向后行断言(?&lt;=...)和负向后行断言(?&lt;!...)</p>
 <pre><code>/(?&lt;=\$)\d+(\.\d*)?/.test(&#39;$10.53&#39;) // true
@@ -418,7 +485,7 @@ for await (const line of readLines(filePath)) {
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>10 Unicode property escapes in regular expressions</h2>
+<h2>12 Unicode property escapes in regular expressions</h2>
 <ul>
 <li><p>正则表达式新增一种方式</p>
 <pre><code class="\p{UnicodePropertyName=UnicodePropertyValue},\P{UnicodePropertyValue}```，可以实现对某一类Unicode字符的识别，而不是写一串的\u1232...">```
@@ -435,7 +502,7 @@ regex.test(&#39;⌚&#39;);
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>11 RegExp named capture groups</h2>
+<h2>13 RegExp named capture groups</h2>
 <ul>
 <li>正则表达式新增命名捕获分组语法<code>(?&lt;name&gt;...)</code><pre><code>let {groups: {one, two}} = /^(?&lt;one&gt;.*):(?&lt;two&gt;.*)$/u.exec(&#39;foo:bar&#39;);
 console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
@@ -444,7 +511,7 @@ console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>12 regexp-dotall-flag</h2>
+<h2>14 regexp-dotall-flag</h2>
 <ul>
 <li>以前正则里的<code>.</code>不能匹配<code>\n \r</code>等换行符，新增<code>s</code>flag，支持单行模式，从而让<code>.</code>能匹配换行符<pre><code>/./s.test(&#39;\n&#39;) // true
 </code></pre></li>
@@ -452,19 +519,30 @@ console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>13 regexp-legacy-features</h2>
+<h2>15 regexp-legacy-features</h2>
 <ul>
 <li>将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定了这些属性的特性。<a href="https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md" target="_blank">具体改动</a></li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>14 BigInt</h2>
+<h2>16 BigInt</h2>
 <ul>
 <li>新增一个数值类型：BigInt，用来表示大于2^53和小于-2^53的整数。<pre><code>typeof 123n === &#39;bigint&#39;
 </code></pre></li>
 <li>Number和BigInt不能互转</li>
 <li>重载了+ / 等运算符</li>
+</ul>
+
+</article></section></slide>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>Babel支持情况</h1>
+<ul>
+<li>global</li>
+<li>Asynchronous Iteration</li>
+<li>async-to-generator</li>
+<li>Rest/Spread Properties</li>
+<li>Optional catch binding</li>
 </ul>
 
 </article></section></slide>
@@ -480,7 +558,6 @@ console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
 <li><a href="http://www.ecma-international.org/ecma-262/6.0/index.html" target="_blank">ECMAScript2017</a></li>
 <li><a href="https://www.w3.org/html/ig/zh/wiki/ES5" target="_blank">ES5中文</a></li>
 <li><a href="http://2ality.com/2015/11/tc39-process.html" target="_blank">Dr.Axel Rauschmayer</a></li>
-<li><a href="http://www.cnblogs.com/ziyunfei/p/5712519.html" target="_blank">紫云飞</a></li>
 </ul>
 
 </article></section></slide>

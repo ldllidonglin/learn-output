@@ -17,7 +17,7 @@ theme: moon
 [slide]
 # ECMAScript规范是什么？
 * ECMAScript
-  * 是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript
+  * 是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等
 * Ecma国际
   * Ecma国际是一个制定通信技术、消费电子等领域相关标准的一个组织。其会员目前有Google、HP、Hitachi、IBM、Intel、Konica Minolta、MircroSoft、Paypal、Yahoo等.
 * ECMA-262
@@ -34,13 +34,16 @@ theme: moon
 * 2015年6月，ECMAScript 2015
 * ...
 [slide]
-# ECMAScript规范如何制定?
-* ECMAScript规范由Ecma国际的TC39委员会制定
-* 从ECMAScript2016(ES7)开始是每年发布一个版本，并且成文标准要从事实标准中诞生，实现先于标准存在
-* 任何人都可以去[ecma262的github](https://github.com/tc39/ecma262/pulls)以提PR的方式提出提案
-* TC39委员会每两月开一次会，讨论各个阶段的提案能否进入下一阶段
-* 每个提案一共要经过[5个阶段](https://tc39.github.io/process-document/)，到达stage4的提案才会写入当年要发布的规范
-* 每年6月份会开General Assembly，表决是否通过当年的ECMA-262标准。
+# ECMAScript规范如何制定?  
++ Who？ {:&.moveIn}
+  * Ecma国际的TC39委员会
++ How？
+  * 成文标准要从事实标准中诞生，实现先于标准存在
+  * 任何人都可以去[ecma262的github](https://github.com/tc39/ecma262/pulls)以提PR的方式提出提案
+  * TC39委员会每两月开一次会，讨论各个阶段的提案能否进入下一阶段
+  * 每个提案一共要经过[5个阶段](https://tc39.github.io/process-document/)，到达stage4的提案才会写入下一版规范
++ when？
+  * Ecma国际每年6月份开General Assembly，表决是否通过当年的ECMA-262标准。
 [slide]
 每个提案要经过的五个阶段的官方说明
 ![stages](/img/ECMA/stages.png)
@@ -54,6 +57,9 @@ theme: moon
 + stage4(Finished)，完成阶段，必须有2个实现通过[test262](https://github.com/tc39/test262)测试，ECMAScript的编辑必须规范上的签字
 
 [slide]
+# ES2017&ES2018
+
+[slide]
 # ECMAScript2017 总体介绍
 * 共27章+7个附录，共880页
 * 1-5章主要是讲规范本身的历史、引用、符号约定等内容
@@ -61,9 +67,6 @@ theme: moon
 * 10-16章是对ECMAScript的语法定义，比如表达式、语句、函数、类等
 * 17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义
 * 27章是内存模型
-
-[slide]
-# ES2017&ES2018
 
 [slide]
 # ES2017
@@ -76,7 +79,7 @@ theme: moon
  + Shared memory and atomics
 
 [slide]
-## Object新增两个枚举方法
+## 1 Object新增两个枚举方法
     + Object.values
     ```
     const obj = { x: 'xxx', y: 1 };
@@ -154,7 +157,7 @@ es8(10, 20, 30,);
   function fetchTextByPromise() {
     return new Promise(resolve => { 
         setTimeout(() => { 
-        resolve("es8");
+          resolve("es8");
         }, 2000);
     });
   }
@@ -167,7 +170,7 @@ es8(10, 20, 30,);
 
 [slide]
 ## 6 Shared memory and atomics
-* 结合Web Worker，使用SharedArrayBuffer在不同线程间共享内存，通过Atomicsj解决多线程对共享内存的的竞态问题。
+* 结合Web Worker，使用SharedArrayBuffer在不同线程间共享内存，通过Atomics解决多线程对共享内存的的竞态问题。
     ```
     // main.js
     const worker = new Worker('worker.js');
@@ -182,6 +185,7 @@ es8(10, 20, 30,);
     self.addEventListener('message', function (event) {
         const {sharedBuffer} = event.data;
         const sharedArray = new Int32Array(sharedBuffer); // (A)
+        Atomics.store(sharedArray, 0, 123);
         // ···
     });
     ```
@@ -192,12 +196,13 @@ es8(10, 20, 30,);
 * stage4目前只有一个
   + [Lifting template literal restriction](https://github.com/tc39/proposal-template-literal-revision)
  
-* stage3有[14个](https://github.com/tc39/proposals/blob/master/README.md)
+* stage3有[16个](https://github.com/tc39/proposals/blob/master/README.md)
    * [Function.prototype.toString revision](http://tc39.github.io/Function-prototype-toString-revision/)
    * [promise-finally](https://github.com/tc39/proposal-promise-finally)
    * [Optional catch binding](https://github.com/tc39/proposal-optional-catch-binding)
    * [class fields](https://github.com/tc39/proposal-class-fields)
    * [import()](https://github.com/tc39/proposal-dynamic-import)
+   * [import.meta](https://github.com/tc39/proposal-import-meta)
    * [global](https://github.com/tc39/proposal-global)
    
 [slide]
@@ -209,7 +214,8 @@ es8(10, 20, 30,);
 * [s (dotAll) flag for regular expressions](https://github.com/tc39/proposal-regexp-dotall-flag)
 * [Legacy RegExp features in JavaScript](https://github.com/tc39/proposal-regexp-legacy-features)
 * [BigInt](https://github.com/tc39/proposal-bigint)
-   
+* [Private methods and accessors](https://github.com/tc39/proposal-private-methods)
+
 [slide]
 # stage 4
 [slide]
@@ -266,22 +272,57 @@ es8(10, 20, 30,);
 
 [slide]
 ## 4 global
-* 增加一个名为global的全局对象，在浏览器、nodejs、Web Workers通用的全局对象
-
-
-## 5 import(specifier)
-* 支持动态加载模块，返回一个Promise
+* 增加一个名为global的全局对象，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量
 ```
-if (isLegacyPlatform()) {
-    import(`messages_${getLocale()}.js)
-    .then(myModule => {
-        console.log(myModule.default);
-    });
-}
+'use strict';
+(function (global) {
+	if (!global.global) {
+		if (Object.defineProperty) {
+			Object.defineProperty(global, 'global', {
+				configurable: true,
+				enumerable: false,
+				value: global,
+				writable: true
+			});
+		} else {
+			global.global = global;
+		}
+	}
+})(typeof this === 'object' ? this : Function('return this')())
 ```
 
 [slide]
-## 6 Rest/Spread Properties
+## 5 import(specifier)
+* ES2015就写入规范的import，原生提供了静态的、同步的加载模块的方式
+* import()用来支持动态加载模块，返回一个Promise  
+```
+import('a.js')
+.then(myModule => {
+    console.log(myModule.default);
+});
+```
+
+[slide]
+## 6 import.meta
+* 给模块内部提供一种获取上下文信息的途径
+```
+<script type="module" src="path/to/hamster-displayer.mjs" data-size="500"></script>
+(async () => {
+  const response = await fetch(new URL("../hamsters.jpg", import.meta.url));
+  const blob = await response.blob();
+
+  const size = import.meta.scriptElement.dataset.size || 300;
+
+  const image = new Image();
+  image.src = URL.createObjectURL(blob);
+  image.width = image.height = size;
+
+  document.body.appendChild(image);
+})();
+```
+
+[slide]
+## 7 Rest/Spread Properties
 * 对象也支持原来数组的展开运算符和函数形参的剩余参数语法
 ```
 const obj = {foo: 1, bar: 2, baz: 3};
@@ -294,20 +335,36 @@ console.log({...obj, qux: 4})
 ```
 
 [slide]
-## 7 class-fields
-* class定义新增公共字段和私有字段
-```
-class Counter extends HTMLElement {
-  #x = 0; //私有字段
-  y = 1;
-  a () {
+## 8 class-fields
+* class语法新增声明公共字段和私有字段的方式
+  ```
+  class Counter extends HTMLElement {
+    #x = 0; // 私有字段
+    y = 1; // 公共字段
+    a () {
 
+    }
   }
-}
-```
+  ```
 
 [slide]
-## 8 async-iteration
+## 9 Private methods and accessors
+* class语法新增申明私有方法和访问器
+  ```
+  class Counter extends HTMLElement {
+    #x = 0; // 私有字段
+    y = 1; // 公共字段
+    #a () {
+      this.#x++
+    }
+    get #x() {}
+    set #x(value) {}
+  }
+
+  ```
+
+[slide]
+## 10 async-iteration
 * 新增异步迭代器，针对异步数据迭代
   ```
   const { value, done } = syncIterator.next();
@@ -320,7 +377,7 @@ class Counter extends HTMLElement {
   ```
 
 [slide]
-## 9 RegExp Lookbehind Assertions
+## 11 RegExp Lookbehind Assertions
 * 正则表达式以前只有先行断言，现在新增正向后行断言(?<=...)和负向后行断言(?<!...)
   ```
   /(?<=\$)\d+(\.\d*)?/.test('$10.53') // true
@@ -331,7 +388,7 @@ class Counter extends HTMLElement {
   ```
 
 [slide]
-## 10 Unicode property escapes in regular expressions
+## 12 Unicode property escapes in regular expressions
 * 正则表达式新增一种方式
 ```\p{UnicodePropertyName=UnicodePropertyValue},\P{UnicodePropertyValue}```，可以实现对某一类Unicode字符的识别，而不是写一串的\u1232...
   ```
@@ -345,7 +402,7 @@ class Counter extends HTMLElement {
   ```
 
 [slide]
-## 11 RegExp named capture groups
+## 13 RegExp named capture groups
 * 正则表达式新增命名捕获分组语法```(?<name>...) ```
   ```
   let {groups: {one, two}} = /^(?<one>.*):(?<two>.*)$/u.exec('foo:bar');
@@ -353,18 +410,18 @@ class Counter extends HTMLElement {
   ```
 
 [slide]
-## 12 regexp-dotall-flag
+## 14 regexp-dotall-flag
 * 以前正则里的`.`不能匹配`\n \r`等换行符，新增`s`flag，支持单行模式，从而让`.`能匹配换行符
 ```
 /./s.test('\n') // true
 ```
 
 [slide]
-## 13 regexp-legacy-features
+## 15 regexp-legacy-features
 * 将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定了这些属性的特性。[具体改动](https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md)
 
 [slide]
-## 14 BigInt
+## 16 BigInt
 * 新增一个数值类型：BigInt，用来表示大于2^53和小于-2^53的整数。
   ```
   typeof 123n === 'bigint'
@@ -372,6 +429,13 @@ class Counter extends HTMLElement {
 * Number和BigInt不能互转
 * 重载了+ / 等运算符
 
+[slide]
+# Babel支持情况
+* global
+* Asynchronous Iteration
+* async-to-generator
+* Rest/Spread Properties
+* Optional catch binding
 [slide]
 # THX
 [slide]
@@ -381,4 +445,3 @@ class Counter extends HTMLElement {
 * [ECMAScript2017](http://www.ecma-international.org/ecma-262/6.0/index.html)
 * [ES5中文](https://www.w3.org/html/ig/zh/wiki/ES5)
 * [Dr.Axel Rauschmayer](http://2ality.com/2015/11/tc39-process.html)
-* [紫云飞](http://www.cnblogs.com/ziyunfei/p/5712519.html)
