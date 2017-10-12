@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>ECMAScript2017&amp;2018 - By 李冬琳</title>
+    <title>ECMAScript2017&amp;2018+ - By 李冬琳</title>
     <link rel="stylesheet" media="all" href="./css/nodeppt.css">
     <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="./css/phone.css">
     
@@ -21,14 +21,14 @@
 <div class="slides">
     <slides id="container">
         <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ECMAScript规范及ECMAScript2017&amp;2018</h1>
+<h1>ECMAScript规范及ECMAScript2017&amp;2018+</h1>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>主要内容</h1>
 <ul>
 <li>ECMAScript规范及其制定流程</li>
-<li>ES2017&amp;ES2018</li>
+<li>ES2017&amp;ES2018+</li>
 </ul>
 
 </article></section></slide>
@@ -37,10 +37,10 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ECMAScript规范是什么？</h1>
-<ul>
+<h1>What？</h1>
+<ul class="moveIn">
 <li>ECMAScript<ul>
-<li>是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等</li>
+<li>是一种由<strong>Ecma国际</strong>通过<strong>ECMA-262</strong>标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等</li>
 </ul>
 </li>
 <li>Ecma国际<ul>
@@ -55,22 +55,24 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ECMAScript的历史</h1>
+<h1>History</h1>
 <ul>
-<li>1995年，Netscape的Brendan Eich发明了JavaScript语言</li>
+<li>1995年，Netscape的<strong>Brendan Eich</strong>发明了JavaScript语言</li>
 <li>1996年Netscape将JavaScript提交给ECMA</li>
 <li>1997年6月，ECMAScript 1.0</li>
 <li>1998年6月，ECMAScript 2.0</li>
 <li>1999年12月，ECMAScript 3.0</li>
 <li>2009年12月，ECMAScript 5.0</li>
 <li>2011年6月，ECMAScript 5.1</li>
-<li>2015年6月，ECMAScript 2015</li>
+<li><span class="red">2015年6月，ECMAScript 2015</span></li>
+<li>2016年6月，ECMAScript 2016</li>
+<li>2017年6月，ECMAScript 2017</li>
 <li>...</li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ECMAScript规范如何制定?</h1>
+<h1>Update</h1>
 <ul class="moveIn">
 <li>Who？<ul>
 <li>Ecma国际的TC39委员会</li>
@@ -90,13 +92,13 @@
 </ul>
 
 </article></section></slide>
-<slide class="slide"><section class="slide-wrapper"><article>
-<p>每个提案要经过的五个阶段的官方说明
-<img src="./img/ECMA/stages.png" alt="stages"></p>
+<slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
+<h1>TC39 Process</h1>
+<img src="./img/ECMA/stages.png" alt="stages">
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>5个阶段说明</h1>
+<h1>TC39 Process</h1>
 <ul>
 <li>stage0(Strawman)，只要注册会TC39的会员，就可以提交</li>
 <li>stage1(Proposal)，提供demos/polyfills。说明TC39委员会愿意考虑这提议</li>
@@ -107,25 +109,25 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
-<h1>ES2017&amp;ES2018</h1>
+<h1>ES2017&amp;ES2018+</h1>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>ECMAScript2017 总体介绍</h1>
 <ul>
 <li>共27章+7个附录，共880页</li>
-<li>1-5章主要是讲规范本身的历史、引用、符号约定等内容</li>
-<li>6-9章分别是数据类型、抽象操作、执行上下文、对象的内部方法</li>
-<li>10-16章是对ECMAScript的语法定义，比如表达式、语句、函数、类等</li>
-<li>17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义</li>
-<li>27章是内存模型</li>
+<li>1-5: 规范的历史、引用、符号约定等内容</li>
+<li>6-9章: 数据类型、抽象操作、执行上下文、对象的内部方法</li>
+<li>10-16章: ECMAScript的语法定义，比如表达式、语句、函数、类等</li>
+<li>17-26章: ECMAScript标准库的定义，比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义</li>
+<li>27章: 内存模型</li>
 </ul>
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>ES2017</h1>
 <ul>
-<li>今年6月27号在General Assembly上表决通过，包含的<a href="https://github.com/tc39/proposals/blob/master/finished-proposals.md" target="_blank">新特性</a>主要有以下几个：<ul>
+<li>今年6月27号在General Assembly上表决通过，<a href="https://github.com/tc39/proposals/blob/master/finished-proposals.md" target="_blank">新特性</a>主要有：<ul>
 <li>Object.values/Object.entries</li>
 <li>String padding</li>
 <li>Object.getOwnPropertyDescriptors</li>
@@ -138,7 +140,7 @@
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article>
-<h2>1 Object新增两个枚举方法</h2>
+<h2>1 Object.values/Object.entries</h2>
 <ul>
 <li><p>Object.values</p>
 <pre><code>const obj = { x: &#39;xxx&#39;, y: 1 };
@@ -256,14 +258,14 @@ sayHello(); // Hello es8
 
 </article></section></slide>
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vleft">
-<h1>ES2018</h1>
+<h1>ES2018+</h1>
 <ul>
-<li><p>stage4目前只有一个</p>
+<li><p>stage4</p>
 <ul>
 <li><a href="https://github.com/tc39/proposal-template-literal-revision" target="_blank">Lifting template literal restriction</a></li>
 </ul>
 </li>
-<li><p>stage3有<a href="https://github.com/tc39/proposals/blob/master/README.md" target="_blank">16个</a></p>
+<li><p>stage3(<a href="https://github.com/tc39/proposals/blob/master/README.md" target="_blank">16个</a>)</p>
 <ul>
 <li><a href="http://tc39.github.io/Function-prototype-toString-revision/" target="_blank">Function.prototype.toString revision</a></li>
 <li><a href="https://github.com/tc39/proposal-promise-finally" target="_blank">promise-finally</a></li>
@@ -298,13 +300,13 @@ sayHello(); // Hello es8
 <slide class="slide"><section class="slide-wrapper"><article class="flexbox vcenter">
 <h1>Template Literal Revision</h1>
 <ul>
-<li>现在规范中，对于模板字符串有限制，会对\x，\u开头的字符串进行转义<pre><code>function latex(strings) {...}
+<li>现在规范中，对于模板字符串有限制，对\x，\u开头的字符串进行转义<pre><code>function latex(strings) {...}
 let document = latex`
   \newcommand{\unicode}{\textbf{Unicode!}} // 报错
   \newcommand{\xerxes}{\textbf{King!}} // 报错
 `
 </code></pre></li>
-<li>该提案就是放松对标签模板里面的字符串转义的限制。如果遇到不合法的字符串转义，就返回undefined，而不是报错，并且从raw属性上面可以得到原始字符串。<pre><code>function tag(strs) {
+<li>放松对标签模板里面的字符串转义的限制。遇到不合法的字符串转义，就返回undefined，而不是报错，并且从raw属性上面可以得到原始字符串。<pre><code>function tag(strs) {
     strs[0] === undefined
     strs.raw[0] === &quot;\\unicode and \\u{55}&quot;;
 }
@@ -321,10 +323,10 @@ tag`\unicode and \u{55}`
 <h1>1 Function.prototype.toString</h1>
 <ul>
 <li>以前规范规定的很模糊，导致各引擎实现的不一致。比如对换行空格的处理、内置函数和自定义函数的返回</li>
-<li>这个提案就是明确、具体的规定这个方法的针对不同的函数应该返回什么。<ul>
+<li>明确、具体的规定这个方法的针对不同的函数的返回。<ul>
 <li>内置函数、宿主函数、绑定函数一律返回&quot;function () { [native code] }&quot;</li>
 <li>通过ECMAScript定义的，一字不落的返回和源代码一样的文本</li>
-<li>通过Function等构造函数动态创建的，合成一个源代码返回，针对不同的情况，规定了按何种格式返回</li>
+<li>通过Function等构造函数动态创建的，合成一个源代码返回，针对不同的情况，规定返回格式</li>
 <li>其余情况返回TypeError</li>
 </ul>
 </li>
@@ -347,7 +349,7 @@ tag`\unicode and \u{55}`
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>3 Optional catch binding</h2>
 <ul>
-<li><p>目前的规范规定try{}catch(e){}的e参数不可省略。但是这个参数又经常不用。这个提案就提出让这个参数变成是可选的。</p>
+<li><p>try{}catch(e){}的e参数变为可选</p>
 <pre><code>try{
 
 }catch(){
@@ -360,7 +362,7 @@ tag`\unicode and \u{55}`
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>4 global</h2>
 <ul>
-<li>增加一个名为global的全局对象，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量<pre><code>&#39;use strict&#39;;
+<li>增加一个名为global的，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量<pre><code>&#39;use strict&#39;;
 (function (global) {
   if (!global.global) {
       if (Object.defineProperty) {
@@ -415,7 +417,7 @@ document.body.appendChild(image);
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>7 Rest/Spread Properties</h2>
 <ul>
-<li>对象也支持原来数组的展开运算符和函数形参的剩余参数语法<pre><code>const obj = {foo: 1, bar: 2, baz: 3};
+<li>对象支持展开运算符和函数形参的剩余参数语法<pre><code>const obj = {foo: 1, bar: 2, baz: 3};
 const {foo, ...rest} = obj;
 </code></pre><pre><code>const obj = {foo: 1, bar: 2, baz: 3};
 console.log({...obj, qux: 4})
@@ -521,7 +523,7 @@ console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
 <slide class="slide"><section class="slide-wrapper"><article>
 <h2>15 regexp-legacy-features</h2>
 <ul>
-<li>将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定了这些属性的特性。<a href="https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md" target="_blank">具体改动</a></li>
+<li>将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定这些属性的特性。<a href="https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md" target="_blank">具体改动</a></li>
 </ul>
 
 </article></section></slide>
@@ -555,9 +557,11 @@ console.log(`one: ${one}, two: ${two}`);  // prints one: foo, two: bar
 <li><a href="http://www.ecma-international.org/" target="_blank">ECMA国际</a></li>
 <li><a href="https://github.com/rwaldron/tc39-notes" target="_blank">tc39会议纪要</a></li>
 <li><a href="https://github.com/tc39/proposals/blob/master/README.md" target="_blank">正在进行中的各个提案的状态</a></li>
-<li><a href="http://www.ecma-international.org/ecma-262/6.0/index.html" target="_blank">ECMAScript2017</a></li>
+<li><a href="http://kangax.github.io/compat-table/esnext/" target="_blank">各大浏览器对新特性的实现情况</a></li>
+<li><a href="http://www.ecma-international.org/ecma-262/8.0/index.html" target="_blank">ECMAScript2017</a></li>
 <li><a href="https://www.w3.org/html/ig/zh/wiki/ES5" target="_blank">ES5中文</a></li>
-<li><a href="http://2ality.com/2015/11/tc39-process.html" target="_blank">Dr.Axel Rauschmayer</a></li>
+<li><a href="http://2ality.com/2015/11/tc39-process.html" target="_blank">Dr.Axel Rauschmayer</a>
+*</li>
 </ul>
 
 </article></section></slide>

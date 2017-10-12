@@ -1,40 +1,42 @@
-title: ECMAScript2017&2018
+title: ECMAScript2017&2018+
 speaker: 李冬琳
 url: 
 transition: slide3
 files: 
 theme: moon
 [slide]
-# ECMAScript规范及ECMAScript2017&2018
+# ECMAScript规范及ECMAScript2017&2018+
 [slide]
 # 主要内容
 * ECMAScript规范及其制定流程
-* ES2017&ES2018
+* ES2017&ES2018+
 
 [slide]
 # ECMAScript规范及其制定流程
 
 [slide]
-# ECMAScript规范是什么？
-* ECMAScript
-  * 是一种由Ecma国际通过ECMA-262标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等
+# What？
+* ECMAScript {:&.moveIn}
+  * 是一种由**Ecma国际**通过**ECMA-262**标准化的脚本程序设计语言，它的具体实现有JavaScript、MS的JScript、Adobe 的ActionScript等
 * Ecma国际
   * Ecma国际是一个制定通信技术、消费电子等领域相关标准的一个组织。其会员目前有Google、HP、Hitachi、IBM、Intel、Konica Minolta、MircroSoft、Paypal、Yahoo等.
 * ECMA-262
   * ECMA在1997年发布的262号标准。
 [slide]
-# ECMAScript的历史
-* 1995年，Netscape的Brendan Eich发明了JavaScript语言
+# History
+* 1995年，Netscape的**Brendan Eich**发明了JavaScript语言
 * 1996年Netscape将JavaScript提交给ECMA
 * 1997年6月，ECMAScript 1.0
 * 1998年6月，ECMAScript 2.0
 * 1999年12月，ECMAScript 3.0
 * 2009年12月，ECMAScript 5.0
 * 2011年6月，ECMAScript 5.1
-* 2015年6月，ECMAScript 2015
+* <span class="red">2015年6月，ECMAScript 2015</span>
+* 2016年6月，ECMAScript 2016
+* 2017年6月，ECMAScript 2017
 * ...
 [slide]
-# ECMAScript规范如何制定?  
+# Update
 + Who？ {:&.moveIn}
   * Ecma国际的TC39委员会
 + How？
@@ -45,11 +47,11 @@ theme: moon
 + when？
   * Ecma国际每年6月份开General Assembly，表决是否通过当年的ECMA-262标准。
 [slide]
-每个提案要经过的五个阶段的官方说明
+# TC39 Process
 ![stages](/img/ECMA/stages.png)
 
 [slide]
-# 5个阶段说明
+# TC39 Process
 + stage0(Strawman)，只要注册会TC39的会员，就可以提交
 + stage1(Proposal)，提供demos/polyfills。说明TC39委员会愿意考虑这提议
 + stage2(Draft), 完善的说明，必须包含2个实验性的具体实现，其中一个可以是用转译器实现的，例如Babel
@@ -57,20 +59,20 @@ theme: moon
 + stage4(Finished)，完成阶段，必须有2个实现通过[test262](https://github.com/tc39/test262)测试，ECMAScript的编辑必须规范上的签字
 
 [slide]
-# ES2017&ES2018
+# ES2017&ES2018+
 
 [slide]
 # ECMAScript2017 总体介绍
 * 共27章+7个附录，共880页
-* 1-5章主要是讲规范本身的历史、引用、符号约定等内容
-* 6-9章分别是数据类型、抽象操作、执行上下文、对象的内部方法
-* 10-16章是对ECMAScript的语法定义，比如表达式、语句、函数、类等
-* 17-26章主要是ECMAScript标准库的定义，就是比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义
-* 27章是内存模型
+* 1-5: 规范的历史、引用、符号约定等内容
+* 6-9章: 数据类型、抽象操作、执行上下文、对象的内部方法
+* 10-16章: ECMAScript的语法定义，比如表达式、语句、函数、类等
+* 17-26章: ECMAScript标准库的定义，比如全局对象、数字、日期、Proxy、Reflect等标准对象的定义
+* 27章: 内存模型
 
 [slide]
 # ES2017
-* 今年6月27号在General Assembly上表决通过，包含的[新特性](https://github.com/tc39/proposals/blob/master/finished-proposals.md)主要有以下几个：
+* 今年6月27号在General Assembly上表决通过，[新特性](https://github.com/tc39/proposals/blob/master/finished-proposals.md)主要有：
  + Object.values/Object.entries
  + String padding
  + Object.getOwnPropertyDescriptors
@@ -79,7 +81,7 @@ theme: moon
  + Shared memory and atomics
 
 [slide]
-## 1 Object新增两个枚举方法
+## 1 Object.values/Object.entries
     + Object.values
     ```
     const obj = { x: 'xxx', y: 1 };
@@ -191,12 +193,12 @@ es8(10, 20, 30,);
     ```
 
 [slide]
-# ES2018 {:&.flexbox.vleft}
+# ES2018+ {:&.flexbox.vleft}
 
-* stage4目前只有一个
+* stage4
   + [Lifting template literal restriction](https://github.com/tc39/proposal-template-literal-revision)
  
-* stage3有[16个](https://github.com/tc39/proposals/blob/master/README.md)
+* stage3([16个](https://github.com/tc39/proposals/blob/master/README.md))
    * [Function.prototype.toString revision](http://tc39.github.io/Function-prototype-toString-revision/)
    * [promise-finally](https://github.com/tc39/proposal-promise-finally)
    * [Optional catch binding](https://github.com/tc39/proposal-optional-catch-binding)
@@ -220,7 +222,7 @@ es8(10, 20, 30,);
 # stage 4
 [slide]
 # Template Literal Revision
-* 现在规范中，对于模板字符串有限制，会对\x，\u开头的字符串进行转义
+* 现在规范中，对于模板字符串有限制，对\x，\u开头的字符串进行转义
   ```
   function latex(strings) {...}
   let document = latex`
@@ -228,7 +230,7 @@ es8(10, 20, 30,);
     \newcommand{\xerxes}{\textbf{King!}} // 报错
   `
   ```
-* 该提案就是放松对标签模板里面的字符串转义的限制。如果遇到不合法的字符串转义，就返回undefined，而不是报错，并且从raw属性上面可以得到原始字符串。
+* 放松对标签模板里面的字符串转义的限制。遇到不合法的字符串转义，就返回undefined，而不是报错，并且从raw属性上面可以得到原始字符串。
   ```
   function tag(strs) {
       strs[0] === undefined
@@ -242,10 +244,10 @@ es8(10, 20, 30,);
 [slide]
 # 1 Function.prototype.toString 
 * 以前规范规定的很模糊，导致各引擎实现的不一致。比如对换行空格的处理、内置函数和自定义函数的返回
-* 这个提案就是明确、具体的规定这个方法的针对不同的函数应该返回什么。
+* 明确、具体的规定这个方法的针对不同的函数的返回。
   + 内置函数、宿主函数、绑定函数一律返回"function () { [native code] }"
   + 通过ECMAScript定义的，一字不落的返回和源代码一样的文本
-  + 通过Function等构造函数动态创建的，合成一个源代码返回，针对不同的情况，规定了按何种格式返回
+  + 通过Function等构造函数动态创建的，合成一个源代码返回，针对不同的情况，规定返回格式
   + 其余情况返回TypeError
 
 [slide]
@@ -261,7 +263,7 @@ es8(10, 20, 30,);
 
 [slide]
 ## 3 Optional catch binding
-* 目前的规范规定try{}catch(e){}的e参数不可省略。但是这个参数又经常不用。这个提案就提出让这个参数变成是可选的。
+* try{}catch(e){}的e参数变为可选
   ```
   try{
 
@@ -272,7 +274,7 @@ es8(10, 20, 30,);
 
 [slide]
 ## 4 global
-* 增加一个名为global的全局对象，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量
+* 增加一个名为global的，在浏览器、nodejs、Web Workers中通用的全局对象，用来访问全局变量
 ```
 'use strict';
 (function (global) {
@@ -323,7 +325,7 @@ import('a.js')
 
 [slide]
 ## 7 Rest/Spread Properties
-* 对象也支持原来数组的展开运算符和函数形参的剩余参数语法
+* 对象支持展开运算符和函数形参的剩余参数语法
 ```
 const obj = {foo: 1, bar: 2, baz: 3};
 const {foo, ...rest} = obj;
@@ -418,7 +420,7 @@ console.log({...obj, qux: 4})
 
 [slide]
 ## 15 regexp-legacy-features
-* 将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定了这些属性的特性。[具体改动](https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md)
+* 将很多浏览器已经实现了的，但是没有写入规范的RegExp构造函数上的属性，比如RegExp.$1-9、RegExp.input等写入规范，并且规定这些属性的特性。[具体改动](https://github.com/tc39/proposal-regexp-legacy-features/blob/master/changes.md)
 
 [slide]
 ## 16 BigInt
@@ -436,12 +438,15 @@ console.log({...obj, qux: 4})
 * async-to-generator
 * Rest/Spread Properties
 * Optional catch binding
+
 [slide]
 # THX
 [slide]
 * [ECMA国际](http://www.ecma-international.org/)
 * [tc39会议纪要](https://github.com/rwaldron/tc39-notes)
 * [正在进行中的各个提案的状态](https://github.com/tc39/proposals/blob/master/README.md)
-* [ECMAScript2017](http://www.ecma-international.org/ecma-262/6.0/index.html)
+* [各大浏览器对新特性的实现情况](http://kangax.github.io/compat-table/esnext/)
+* [ECMAScript2017](http://www.ecma-international.org/ecma-262/8.0/index.html)
 * [ES5中文](https://www.w3.org/html/ig/zh/wiki/ES5)
 * [Dr.Axel Rauschmayer](http://2ality.com/2015/11/tc39-process.html)
+* 
